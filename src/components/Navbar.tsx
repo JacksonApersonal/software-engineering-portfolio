@@ -1,4 +1,11 @@
-import { Link } from 'react-router';
+import { Link, NavLink } from 'react-router';
+
+const navLinks = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/projects', label: 'Projects' },
+  { to: '/about', label: 'About' },
+  { to: '/resume', label: 'Resume' },
+];
 
 export function Navbar() {
   return (
@@ -8,22 +15,21 @@ export function Navbar() {
           Jackson Acord
         </Link>
 
-        <div className="flex gap-6 text-sm text-neutral-400">
-          <Link to="/" className="transition hover:text-white">
-            Home
-          </Link>
-
-          <Link to="/projects" className="transition hover:text-white">
-            Projects
-          </Link>
-
-          <Link to="/about" className="transition hover:text-white">
-            About
-          </Link>
-          
-          <Link to="/resume" className="transition hover:text-white">
-            Resume
-          </Link>
+        <div className="flex gap-6 text-sm">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) =>
+                isActive
+                  ? 'font-medium text-white'
+                  : 'text-neutral-400 transition hover:text-white'
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
         </div>
       </nav>
     </header>
