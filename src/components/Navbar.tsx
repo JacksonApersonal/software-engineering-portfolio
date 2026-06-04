@@ -10,12 +10,12 @@ const navLinks = [
 export function Navbar() {
   return (
     <header className="border-b border-neutral-800 bg-neutral-950/95 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
         <Link to="/" className="text-lg font-semibold tracking-tight text-white">
           Jackson Acord
         </Link>
 
-        <div className="flex gap-6 text-sm">
+        <div className="flex flex-wrap gap-3 text-sm sm:gap-6">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -23,8 +23,8 @@ export function Navbar() {
               end={link.end}
               className={({ isActive }) =>
                 isActive
-                  ? 'font-medium text-white'
-                  : 'text-neutral-400 transition hover:text-white'
+                  ? 'rounded-lg bg-white px-3 py-1.5 font-medium text-neutral-950'
+                  : 'rounded-lg px-3 py-1.5 text-neutral-400 transition hover:bg-neutral-900 hover:text-white'
               }
             >
               {link.label}
