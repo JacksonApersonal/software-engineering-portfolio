@@ -1,7 +1,7 @@
 export type Project = {
   slug: string;
   title: string;
-  language: 'Python' | 'Java' | 'C#';
+  language: 'TypeScript' | 'Python' | 'Java' | 'C#';
   summary: string;
   problem: string;
   solution: string;
@@ -14,6 +14,34 @@ export type Project = {
 };
 
 export const projects: Project[] = [
+   {
+    slug: 'software-engineering-portfolio',
+    title: 'Software Engineering Portfolio',
+    language: 'TypeScript',
+    summary:
+      'A modern portfolio website built to showcase software engineering projects, resume experience, and technical writeups.',
+    problem:
+      'A resume can summarize experience, but it does not show how someone structures a project, explains technical work, or presents software in a usable way.',
+    solution:
+      'This portfolio uses React, TypeScript, Vite, Tailwind CSS, and React Router to present project work, resume experience, contact links, and detailed project writeups in a clean modern interface.',
+    concepts: ['React', 'TypeScript', 'Routing', 'Responsive Design'],
+    features: [
+      'Modern grayscale interface built with Tailwind CSS.',
+      'Route-based pages for home, projects, about, resume, and project details.',
+      'Reusable project card and project detail components.',
+      'Data-driven project pages using a shared project model.',
+      'Live deployment through Vercel.',
+    ],
+    testingStrategy: [
+      'Manual route testing for all main pages.',
+      'Responsive layout checks across desktop and mobile widths.',
+      'Production build validation using Vite.',
+      'Link validation for contact, GitHub, LinkedIn, and deployed project URLs.',
+    ],
+    status: 'Complete',
+    repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
+    demoUrl: 'https://software-engineering-portfolio-lilac.vercel.app/',
+  },
   {
     slug: 'pathfinding-visualizer',
     title: 'Pathfinding Visualizer',
