@@ -45,7 +45,7 @@ export const projects: Project[] = [
   {
     slug: 'pathfinding-visualizer',
     title: 'Pathfinding Visualizer',
-    language: 'Python',
+    language: 'TypeScript',
     summary:
       'An interactive algorithm visualizer for comparing BFS, Dijkstra, and A* pathfinding.',
     problem:
@@ -67,7 +67,8 @@ export const projects: Project[] = [
       'Regression tests for edge cases like start equals target.',
     ],
     status: 'Complete',
-    demoUrl: '/projects/pathfinding-visualizer/demo',
+    repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio/tree/main/src/components/demos',
+    demoUrl: '/projects/pathfinding-visualizer',
   },
   {
     slug: 'url-shortener',

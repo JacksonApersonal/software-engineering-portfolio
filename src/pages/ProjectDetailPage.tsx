@@ -145,21 +145,18 @@ export function ProjectDetailPage() {
         </ol>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2">
-        <LinkPanel
-          title="Source Code"
-          description="GitHub repository will be linked here once the project repo is created."
-          linkText={project.repoUrl ? 'View repository' : 'Repository coming soon'}
-          href={project.repoUrl}
-        />
-
-        <LinkPanel
-          title="Published Demo"
-          description="A live hosted version or embedded demo will be linked here once available."
-          linkText={project.demoUrl ? 'Open demo' : 'Demo coming soon'}
-          href={project.demoUrl}
-        />
-      </section>
+    <section>
+      <LinkPanel
+        title="Source Code"
+        description={
+          project.repoUrl
+            ? 'View the source code for this project on GitHub.'
+            : 'GitHub repository will be linked here once the project repo is created.'
+        }
+        linkText={project.repoUrl ? 'View source code' : 'Repository coming soon'}
+        href={project.repoUrl}
+      />
+    </section>
     </section>
   );
 }
