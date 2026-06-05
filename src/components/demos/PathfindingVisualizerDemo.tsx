@@ -1,6 +1,13 @@
 import { useState } from 'react';
 
-type CellType = 'empty' | 'start' | 'end' | 'wall' | 'visited' | 'path';
+type CellType =
+  | 'empty'
+  | 'start'
+  | 'end'
+  | 'wall'
+  | 'weight'
+  | 'visited'
+  | 'path';
 
 type GridCell = {
   row: number;
@@ -61,6 +68,10 @@ function getNeighbors(position: Position): Position[] {
 
 function positionKey(position: Position) {
   return `${position.row}-${position.col}`;
+}
+
+function getMovementCost(cell: GridCell) {
+  return cell.type === 'weight' ? 5 : 1;
 }
 
 function runBreadthFirstSearch(grid: GridCell[][]) {
@@ -176,7 +187,7 @@ function runDijkstra(grid: GridCell[][]) {
       }
 
       const neighborKey = positionKey(neighbor);
-      const newDistance = currentDistance + 1;
+      const newDistance = currentDistance + getMovementCost(neighborCell);
       const oldDistance =
         distances.get(neighborKey) ?? Number.POSITIVE_INFINITY;
 
@@ -227,15 +238,19 @@ export function PathfindingVisualizerDemo() {
   );
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>('BFS');
 
-  function handleCellClick(row: number, col: number) {
+  function handleCellClick(
+    row: number,
+    col: number,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) {
     if (isRunning) {
       return;
     }
 
-    setMessage('Grid updated. Run BFS to calculate a path.');
+    setMessage('Grid updated. Run an algorithm to calculate a path.');
 
     setGrid((currentGrid) =>
-      currentGrid.map((gridRow) =>
+      clearPathFromGrid(currentGrid).map((gridRow) =>
         gridRow.map((cell) => {
           if (cell.row !== row || cell.col !== col) {
             return cell;
@@ -243,6 +258,13 @@ export function PathfindingVisualizerDemo() {
 
           if (cell.type === 'start' || cell.type === 'end') {
             return cell;
+          }
+
+          if (event.altKey) {
+            return {
+              ...cell,
+              type: cell.type === 'weight' ? 'empty' : 'weight',
+            };
           }
 
           return {
@@ -368,6 +390,10 @@ export function PathfindingVisualizerDemo() {
           return cell;
         }
 
+        if (cell.type === 'weight' && type === 'visited') {
+          return cell;
+        }
+
         return {
           ...cell,
           type,
@@ -385,8 +411,8 @@ export function PathfindingVisualizerDemo() {
           </h3>
 
           <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Click cells to place or remove walls. Run BFS to visualize how the
-            algorithm explores the grid and finds the shortest path.
+            Click cells to place walls. Alt-click cells to place weighted terrain.
+            Run BFS or Dijkstra to compare how each algorithm explores the grid.
           </p>
 
           <p className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300">
@@ -410,11 +436,11 @@ export function PathfindingVisualizerDemo() {
 
                    if (algorithm === 'BFS') {
                       setMessage(
-                        'BFS selected. This finds the shortest path in an unweighted grid.',
+                        'BFS selected. It ignores weights and finds the shortest path by number of steps.',
                       );
                     } else if (algorithm === 'Dijkstra') {
                       setMessage(
-                        'Dijkstra selected. This finds the shortest path by tracking distance costs.',
+                        'Dijkstra selected. It accounts for weighted cells and chooses the lowest-cost path.',
                       );
                     } else {
                       setMessage('A* selected. Implementation coming soon.');
@@ -468,6 +494,7 @@ export function PathfindingVisualizerDemo() {
         <LegendItem label="Start" className="border border-white bg-white" />
         <LegendItem label="End" className="border border-neutral-500 bg-neutral-500" />
         <LegendItem label="Wall" className="border border-rose-700 bg-rose-600" />
+        <LegendItem label="Weight" className="border border-amber-600 bg-amber-500" />
         <LegendItem label="Visited" className="border border-sky-800 bg-sky-900" />
         <LegendItem label="Path" className="border border-emerald-600 bg-emerald-500" />
         <LegendItem
@@ -488,7 +515,7 @@ export function PathfindingVisualizerDemo() {
               <button
                 key={`${cell.row}-${cell.col}`}
                 type="button"
-                onClick={() => handleCellClick(cell.row, cell.col)}
+                onClick={(event) => handleCellClick(cell.row, cell.col, event)}
                 className={`h-7 w-7 rounded-md border transition ${getCellClassName(
                   cell.type,
                 )}`}
@@ -524,6 +551,8 @@ function getCellClassName(type: CellType) {
       return 'border-neutral-500 bg-neutral-500';
     case 'wall':
       return 'border-rose-700 bg-rose-600';
+    case 'weight':
+      return 'border-amber-600 bg-amber-500';
     case 'visited':
       return 'border-sky-800 bg-sky-900';
     case 'path':
