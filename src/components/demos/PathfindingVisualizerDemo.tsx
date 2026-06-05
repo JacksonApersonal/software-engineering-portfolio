@@ -138,12 +138,16 @@ function buildPath(previous: Map<string, Position>) {
 export function PathfindingVisualizerDemo() {
   const [grid, setGrid] = useState<GridCell[][]>(() => createInitialGrid());
   const [isRunning, setIsRunning] = useState(false);
+  const [message, setMessage] = useState(
+    'Place walls, then run BFS to find the shortest path.',
+  );
 
   function handleCellClick(row: number, col: number) {
     if (isRunning) {
       return;
     }
-
+    setMessage('Grid updated. Run BFS to calculate a path.');
+    
     setGrid((currentGrid) =>
       currentGrid.map((gridRow) =>
         gridRow.map((cell) => {
@@ -169,7 +173,17 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
+    setMessage('Grid cleared. Place walls and run BFS to find the shortest path.');
     setGrid(createInitialGrid());
+  }
+
+  function clearPath() {
+    if (isRunning) {
+      return;
+    }
+
+    setGrid((currentGrid) => clearPathFromGrid(currentGrid));
+    setMessage('Path cleared. Walls were preserved.');
   }
 
   function clearPathFromGrid(currentGrid: GridCell[][]) {
@@ -196,6 +210,7 @@ export function PathfindingVisualizerDemo() {
     const result = runBreadthFirstSearch(cleanedGrid);
 
     setIsRunning(true);
+    setMessage('Running BFS...');
     setGrid(cleanedGrid);
 
     animateSearch(result.visitedOrder, result.path);
@@ -220,19 +235,25 @@ export function PathfindingVisualizerDemo() {
   }
 
   function animatePath(path: Position[]) {
+    if (path.length === 0) {
+      window.setTimeout(() => {
+        setMessage('No path found. Try removing some walls.');
+        setIsRunning(false);
+      }, 300);
+
+      return;
+    }
+
     path.forEach((position, index) => {
       window.setTimeout(() => {
         setGrid((currentGrid) => updateCellType(currentGrid, position, 'path'));
 
         if (index === path.length - 1) {
+          setMessage(`Path found. Shortest path length: ${path.length} cells.`);
           setIsRunning(false);
         }
       }, index * 40);
     });
-
-    if (path.length === 0) {
-      setIsRunning(false);
-    }
   }
 
   function updateCellType(
@@ -259,7 +280,7 @@ export function PathfindingVisualizerDemo() {
   }
 
   return (
-    <div className="w-fit max-w-full space-y-5 text-left">
+    <div className="mx-auto w-fit max-w-full space-y-5 text-left">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold text-white">
@@ -269,6 +290,10 @@ export function PathfindingVisualizerDemo() {
           <p className="mt-2 text-sm leading-6 text-neutral-400">
             Click cells to place or remove walls. Run BFS to visualize how the
             algorithm explores the grid and finds the shortest path.
+          </p>
+
+          <p className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300">
+            {message}
           </p>
         </div>
 
@@ -280,6 +305,15 @@ export function PathfindingVisualizerDemo() {
             className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-neutral-950 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400"
           >
             {isRunning ? 'Running BFS...' : 'Run BFS'}
+          </button>
+
+          <button
+            type="button"
+            onClick={clearPath}
+            disabled={isRunning}
+            className="rounded-xl border border-neutral-700 px-4 py-2 text-sm font-medium text-white transition hover:border-neutral-500 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+          >
+            Clear Path
           </button>
 
           <button
