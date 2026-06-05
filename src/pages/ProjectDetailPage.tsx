@@ -84,7 +84,7 @@ export function ProjectDetailPage() {
           </span>
         </div>
 
-        <div className="mt-6 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
+        <div className="mt-6 w-fit max-w-full rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
           {project.slug === 'pathfinding-visualizer' ? (
             <PathfindingVisualizerDemo />
           ) : project.demoUrl ? (
