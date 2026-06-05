@@ -13,6 +13,8 @@ type Position = {
   col: number;
 };
 
+type Algorithm = 'BFS' | 'Dijkstra' | 'A*';
+
 const rowCount = 15;
 const colCount = 25;
 
@@ -141,13 +143,15 @@ export function PathfindingVisualizerDemo() {
   const [message, setMessage] = useState(
     'Place walls, then run BFS to find the shortest path.',
   );
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>('BFS');
 
   function handleCellClick(row: number, col: number) {
     if (isRunning) {
       return;
     }
+
     setMessage('Grid updated. Run BFS to calculate a path.');
-    
+
     setGrid((currentGrid) =>
       currentGrid.map((gridRow) =>
         gridRow.map((cell) => {
@@ -173,8 +177,8 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
-    setMessage('Grid cleared. Place walls and run BFS to find the shortest path.');
     setGrid(createInitialGrid());
+    setMessage('Grid reset. Place walls, then run BFS to find the shortest path.');
   }
 
   function clearPath() {
@@ -201,8 +205,13 @@ export function PathfindingVisualizerDemo() {
     );
   }
 
-  function runBfs() {
+  function runSelectedAlgorithm() {
     if (isRunning) {
+      return;
+    }
+
+    if (selectedAlgorithm !== 'BFS') {
+      setMessage(`${selectedAlgorithm} is coming soon. BFS is available now.`);
       return;
     }
 
@@ -295,16 +304,52 @@ export function PathfindingVisualizerDemo() {
           <p className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300">
             {message}
           </p>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {(['BFS', 'Dijkstra', 'A*'] as Algorithm[]).map((algorithm) => {
+              const isSelected = selectedAlgorithm === algorithm;
+
+              return (
+                <button
+                  key={algorithm}
+                  type="button"
+                  onClick={() => {
+                    if (isRunning) {
+                      return;
+                    }
+
+                    setSelectedAlgorithm(algorithm);
+
+                    if (algorithm === 'BFS') {
+                      setMessage(
+                        'BFS selected. This finds the shortest path in an unweighted grid.',
+                      );
+                    } else {
+                      setMessage(`${algorithm} selected. Implementation coming soon.`);
+                    }
+                  }}
+                  disabled={isRunning}
+                  className={
+                    isSelected
+                      ? 'rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400'
+                      : 'rounded-xl border border-neutral-800 px-3 py-1.5 text-sm font-medium text-neutral-400 transition hover:border-neutral-600 hover:text-white disabled:cursor-not-allowed disabled:text-neutral-700'
+                  }
+                >
+                  {algorithm}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={runBfs}
+            onClick={runSelectedAlgorithm}
             disabled={isRunning}
             className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-neutral-950 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400"
           >
-            {isRunning ? 'Running BFS...' : 'Run BFS'}
+            {isRunning ? `Running ${selectedAlgorithm}...` : `Run ${selectedAlgorithm}`}
           </button>
 
           <button
@@ -339,8 +384,8 @@ export function PathfindingVisualizerDemo() {
         />
       </div>
 
-        <div className="overflow-x-auto">
-        <div className="mx-auto inline-block w-max rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
+      <div className="overflow-x-auto">
+        <div className="inline-block rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
           <div
             className="grid gap-1"
             style={{
