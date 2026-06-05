@@ -17,6 +17,25 @@ export function ResumePage() {
           to ship stable products. I bring a strong foundation in debugging,
           reliability, and hands-on engineering across multiple technologies.
         </p>
+
+        <div className="flex flex-wrap gap-4">
+          <a
+            href="/Jackson-Acord-Resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl bg-white px-5 py-3 font-medium text-neutral-950 transition hover:bg-neutral-200"
+          >
+            View Resume PDF
+          </a>
+
+          <a
+            href="/Jackson-Acord-Resume.pdf"
+            download
+            className="rounded-xl border border-neutral-700 px-5 py-3 font-medium text-white transition hover:border-neutral-500 hover:bg-neutral-900"
+          >
+            Download Resume
+          </a>
+        </div>
       </div>
 
       <section className="grid gap-6 md:grid-cols-2">
