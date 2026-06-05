@@ -74,6 +74,10 @@ function getMovementCost(cell: GridCell) {
   return cell.type === 'weight' ? 5 : 1;
 }
 
+function getManhattanDistance(a: Position, b: Position) {
+  return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+}
+
 function runBreadthFirstSearch(grid: GridCell[][]) {
   const queue: Position[] = [startPosition];
   const visited = new Set<string>([positionKey(startPosition)]);
@@ -204,6 +208,111 @@ function runDijkstra(grid: GridCell[][]) {
   };
 }
 
+function runAStar(grid: GridCell[][]) {
+  const openSet: Position[] = [startPosition];
+
+  const gScore = new Map<string, number>();
+  const fScore = new Map<string, number>();
+  const previous = new Map<string, Position>();
+  const visited = new Set<string>();
+
+  const visitedOrder: Position[] = [];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let col = 0; col < colCount; col += 1) {
+      const cell = grid[row][col];
+
+      if (cell.type !== 'wall') {
+        const position = { row, col };
+        const key = positionKey(position);
+
+        gScore.set(key, Number.POSITIVE_INFINITY);
+        fScore.set(key, Number.POSITIVE_INFINITY);
+      }
+    }
+  }
+
+  gScore.set(positionKey(startPosition), 0);
+  fScore.set(
+    positionKey(startPosition),
+    getManhattanDistance(startPosition, endPosition),
+  );
+
+  while (openSet.length > 0) {
+    openSet.sort(
+      (a, b) =>
+        (fScore.get(positionKey(a)) ?? Number.POSITIVE_INFINITY) -
+        (fScore.get(positionKey(b)) ?? Number.POSITIVE_INFINITY),
+    );
+
+    const current = openSet.shift();
+
+    if (!current) {
+      break;
+    }
+
+    const currentKey = positionKey(current);
+
+    if (visited.has(currentKey)) {
+      continue;
+    }
+
+    visited.add(currentKey);
+
+    if (current.row === endPosition.row && current.col === endPosition.col) {
+      return {
+        visitedOrder,
+        path: buildPath(previous),
+      };
+    }
+
+    if (
+      !(current.row === startPosition.row && current.col === startPosition.col)
+    ) {
+      visitedOrder.push(current);
+    }
+
+    const neighbors = getNeighbors(current);
+
+    for (const neighbor of neighbors) {
+      const neighborCell = grid[neighbor.row][neighbor.col];
+
+      if (neighborCell.type === 'wall') {
+        continue;
+      }
+
+      const neighborKey = positionKey(neighbor);
+
+      if (visited.has(neighborKey)) {
+        continue;
+      }
+
+      const currentGScore =
+        gScore.get(currentKey) ?? Number.POSITIVE_INFINITY;
+
+      const tentativeGScore = currentGScore + getMovementCost(neighborCell);
+      const oldGScore =
+        gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY;
+
+      if (tentativeGScore < oldGScore) {
+        previous.set(neighborKey, current);
+        gScore.set(neighborKey, tentativeGScore);
+        fScore.set(
+          neighborKey,
+          tentativeGScore + getManhattanDistance(neighbor, endPosition),
+        );
+
+        openSet.push(neighbor);
+      }
+    }
+  }
+
+  return {
+    visitedOrder,
+    path: [],
+  };
+}
+
 function buildPath(previous: Map<string, Position>) {
   const path: Position[] = [];
   let current: Position | undefined = endPosition;
@@ -314,17 +423,14 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
-    if (selectedAlgorithm === 'A*') {
-      setMessage('A* is coming soon. BFS and Dijkstra are available now.');
-      return;
-    }
-
     const cleanedGrid = clearPathFromGrid(grid);
 
     const result =
       selectedAlgorithm === 'BFS'
         ? runBreadthFirstSearch(cleanedGrid)
-        : runDijkstra(cleanedGrid);
+        : selectedAlgorithm === 'Dijkstra'
+          ? runDijkstra(cleanedGrid)
+          : runAStar(cleanedGrid);
 
     setIsRunning(true);
     setMessage(`Running ${selectedAlgorithm}...`);
@@ -412,7 +518,7 @@ export function PathfindingVisualizerDemo() {
 
           <p className="mt-2 text-sm leading-6 text-neutral-400">
             Click cells to place walls. Alt-click cells to place weighted terrain.
-            Run BFS or Dijkstra to compare how each algorithm explores the grid.
+            Compare BFS, Dijkstra, and A* to see how each algorithm searches the grid.
           </p>
 
           <p className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300">
@@ -443,7 +549,9 @@ export function PathfindingVisualizerDemo() {
                         'Dijkstra selected. It accounts for weighted cells and chooses the lowest-cost path.',
                       );
                     } else {
-                      setMessage('A* selected. Implementation coming soon.');
+                      setMessage(
+                        'A* selected. It uses distance cost plus a goal-distance estimate to search more directly.',
+                      );
                     }
                   }}
                   disabled={isRunning}
