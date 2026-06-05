@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router';
 import { projects } from '../data/projects';
+import { PathfindingVisualizerDemo } from '../components/demos/PathfindingVisualizerDemo';
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
@@ -79,16 +80,44 @@ export function ProjectDetailPage() {
           </div>
 
           <span className="rounded-full border border-neutral-800 px-3 py-1 text-sm text-neutral-500">
-            Coming soon
+            {project.demoUrl ? 'Available' : 'Coming soon'}
           </span>
         </div>
 
-        <div className="mt-6 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-8 text-center">
-          <p className="text-neutral-300">Interactive demo placeholder</p>
-          <p className="mt-2 text-sm leading-6 text-neutral-500">
-            Once this project is built, this area will contain either an embedded
-            live demo, screenshots, or a guided walkthrough.
-          </p>
+        <div className="mt-6 rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
+          {project.slug === 'pathfinding-visualizer' ? (
+            <PathfindingVisualizerDemo />
+          ) : project.demoUrl ? (
+            <>
+              <p className="text-center text-neutral-300">
+                This project includes an interactive demo.
+              </p>
+
+              <p className="mt-2 text-center text-sm leading-6 text-neutral-500">
+                Open the demo to interact with the project directly in the browser.
+              </p>
+
+              <div className="mt-5 flex justify-center">
+                <Link
+                  to={project.demoUrl}
+                  className="inline-flex rounded-xl bg-white px-4 py-2 text-sm font-medium text-neutral-950 transition hover:bg-neutral-200"
+                >
+                  Open Interactive Demo
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-center text-neutral-300">
+                Interactive demo placeholder
+              </p>
+
+              <p className="mt-2 text-center text-sm leading-6 text-neutral-500">
+                Once this project is built, this area will contain either an embedded
+                live demo, screenshots, or a guided walkthrough.
+              </p>
+            </>
+          )}
         </div>
       </section>
 

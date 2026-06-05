@@ -65,7 +65,8 @@ export const projects: Project[] = [
       'Tests for shortest-path correctness on known grid layouts.',
       'Regression tests for edge cases like start equals target.',
     ],
-    status: 'Planned',
+    status: 'In Progress',
+    demoUrl: '/projects/pathfinding-visualizer/demo',
   },
   {
     slug: 'url-shortener',
