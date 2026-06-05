@@ -51,13 +51,14 @@ export const projects: Project[] = [
     problem:
       'Pathfinding algorithms are often taught abstractly, which makes it hard to understand how they explore a graph, choose paths, and make tradeoffs.',
     solution:
-      'This project will visualize grid-based pathfinding step by step, allowing users to place walls, choose algorithms, run searches, and compare the resulting paths.',
+      'This project visualizes grid-based pathfinding step by step, allowing users to place walls, add weighted terrain, choose an algorithm, run the search, and compare the resulting path behavior.',
     concepts: ['Algorithms', 'Graphs', 'Visualization', 'Testing'],
     features: [
-      'Interactive grid with start, end, and wall placement.',
-      'BFS, Dijkstra, and A* algorithm implementations.',
-      'Step-by-step visualization of visited nodes and final path.',
-      'Comparison notes explaining algorithm tradeoffs.',
+      'Interactive grid with start, end, wall, and weighted terrain cells.',
+      'Animated BFS, Dijkstra, and A* pathfinding algorithms.',
+      'Step-by-step visualization of visited cells and final shortest path.',
+      'Clear Path and Clear Grid controls for repeated testing.',
+      'Algorithm selector with status messages explaining current behavior.',
     ],
     testingStrategy: [
       'Unit tests for each pathfinding algorithm.',
@@ -65,7 +66,7 @@ export const projects: Project[] = [
       'Tests for shortest-path correctness on known grid layouts.',
       'Regression tests for edge cases like start equals target.',
     ],
-    status: 'In Progress',
+    status: 'Complete',
     demoUrl: '/projects/pathfinding-visualizer/demo',
   },
   {
