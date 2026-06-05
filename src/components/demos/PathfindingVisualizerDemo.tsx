@@ -111,6 +111,88 @@ function runBreadthFirstSearch(grid: GridCell[][]) {
   };
 }
 
+function runDijkstra(grid: GridCell[][]) {
+  const distances = new Map<string, number>();
+  const previous = new Map<string, Position>();
+  const unvisited: Position[] = [];
+  const visitedOrder: Position[] = [];
+
+  for (let row = 0; row < rowCount; row += 1) {
+    for (let col = 0; col < colCount; col += 1) {
+      const cell = grid[row][col];
+
+      if (cell.type !== 'wall') {
+        const position = { row, col };
+        const key = positionKey(position);
+
+        distances.set(key, Number.POSITIVE_INFINITY);
+        unvisited.push(position);
+      }
+    }
+  }
+
+  distances.set(positionKey(startPosition), 0);
+
+  while (unvisited.length > 0) {
+    unvisited.sort(
+      (a, b) =>
+        (distances.get(positionKey(a)) ?? Number.POSITIVE_INFINITY) -
+        (distances.get(positionKey(b)) ?? Number.POSITIVE_INFINITY),
+    );
+
+    const current = unvisited.shift();
+
+    if (!current) {
+      break;
+    }
+
+    const currentDistance =
+      distances.get(positionKey(current)) ?? Number.POSITIVE_INFINITY;
+
+    if (currentDistance === Number.POSITIVE_INFINITY) {
+      break;
+    }
+
+    if (current.row === endPosition.row && current.col === endPosition.col) {
+      return {
+        visitedOrder,
+        path: buildPath(previous),
+      };
+    }
+
+    if (
+      !(current.row === startPosition.row && current.col === startPosition.col)
+    ) {
+      visitedOrder.push(current);
+    }
+
+    const neighbors = getNeighbors(current);
+
+    for (const neighbor of neighbors) {
+      const neighborCell = grid[neighbor.row][neighbor.col];
+
+      if (neighborCell.type === 'wall') {
+        continue;
+      }
+
+      const neighborKey = positionKey(neighbor);
+      const newDistance = currentDistance + 1;
+      const oldDistance =
+        distances.get(neighborKey) ?? Number.POSITIVE_INFINITY;
+
+      if (newDistance < oldDistance) {
+        distances.set(neighborKey, newDistance);
+        previous.set(neighborKey, current);
+      }
+    }
+  }
+
+  return {
+    visitedOrder,
+    path: [],
+  };
+}
+
 function buildPath(previous: Map<string, Position>) {
   const path: Position[] = [];
   let current: Position | undefined = endPosition;
@@ -210,16 +292,20 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
-    if (selectedAlgorithm !== 'BFS') {
-      setMessage(`${selectedAlgorithm} is coming soon. BFS is available now.`);
+    if (selectedAlgorithm === 'A*') {
+      setMessage('A* is coming soon. BFS and Dijkstra are available now.');
       return;
     }
 
     const cleanedGrid = clearPathFromGrid(grid);
-    const result = runBreadthFirstSearch(cleanedGrid);
+
+    const result =
+      selectedAlgorithm === 'BFS'
+        ? runBreadthFirstSearch(cleanedGrid)
+        : runDijkstra(cleanedGrid);
 
     setIsRunning(true);
-    setMessage('Running BFS...');
+    setMessage(`Running ${selectedAlgorithm}...`);
     setGrid(cleanedGrid);
 
     animateSearch(result.visitedOrder, result.path);
@@ -258,7 +344,9 @@ export function PathfindingVisualizerDemo() {
         setGrid((currentGrid) => updateCellType(currentGrid, position, 'path'));
 
         if (index === path.length - 1) {
-          setMessage(`Path found. Shortest path length: ${path.length} cells.`);
+          setMessage(
+            `${selectedAlgorithm} found a path. Shortest path length: ${path.length} cells.`,
+          );
           setIsRunning(false);
         }
       }, index * 40);
@@ -320,12 +408,16 @@ export function PathfindingVisualizerDemo() {
 
                     setSelectedAlgorithm(algorithm);
 
-                    if (algorithm === 'BFS') {
+                   if (algorithm === 'BFS') {
                       setMessage(
                         'BFS selected. This finds the shortest path in an unweighted grid.',
                       );
+                    } else if (algorithm === 'Dijkstra') {
+                      setMessage(
+                        'Dijkstra selected. This finds the shortest path by tracking distance costs.',
+                      );
                     } else {
-                      setMessage(`${algorithm} selected. Implementation coming soon.`);
+                      setMessage('A* selected. Implementation coming soon.');
                     }
                   }}
                   disabled={isRunning}
