@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router';
 import { projects } from '../data/projects';
 import { PathfindingVisualizerDemo } from '../components/demos/PathfindingVisualizerDemo';
+import { UrlShortenerDemo } from '../components/demos/UrlShortenerDemo';
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
@@ -110,6 +111,8 @@ export function ProjectDetailPage() {
         <div className="mt-6 flex justify-center rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
           {project.slug === 'pathfinding-visualizer' ? (
             <PathfindingVisualizerDemo />
+          ) : project.slug === 'url-shortener' ? (
+            <UrlShortenerDemo />
           ) : project.demoUrl ? (
             <div className="max-w-2xl text-center">
               <p className="text-neutral-300">
