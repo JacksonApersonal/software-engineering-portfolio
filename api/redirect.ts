@@ -1,8 +1,8 @@
 import {
   createRedirectHandler,
   serviceUnavailableResponse,
-} from './_lib/handlers';
-import { createProductionStore } from './_lib/upstash';
+} from './_lib/handlers.js';
+import { createProductionStore } from './_lib/upstash.js';
 
 let productionHandler: ((request: Request) => Promise<Response>) | undefined;
 

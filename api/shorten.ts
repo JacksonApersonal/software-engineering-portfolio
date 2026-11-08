@@ -1,11 +1,11 @@
 import {
   createShortenHandler,
   serviceUnavailableResponse,
-} from './_lib/handlers';
+} from './_lib/handlers.js';
 import {
   createProductionShortenDependencies,
   getClientIdentifier,
-} from './_lib/upstash';
+} from './_lib/upstash.js';
 
 let productionHandler: ((request: Request) => Promise<Response>) | undefined;
 

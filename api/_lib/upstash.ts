@@ -3,8 +3,8 @@ import { Redis } from '@upstash/redis';
 import type {
   ShortLinkStore,
   StoredShortLink,
-} from '../../src/lib/urlShortener';
-import type { CreationRateLimiter } from './handlers';
+} from '../../src/lib/urlShortener.js';
+import type { CreationRateLimiter } from './handlers.js';
 
 const LINK_KEY_PREFIX = 'short-link:';
 const RATE_LIMIT_KEY_PREFIX = 'short-link-rate:';

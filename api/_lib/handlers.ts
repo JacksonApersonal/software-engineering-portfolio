@@ -4,7 +4,7 @@ import {
   ShortCodeReservationError,
   validateAndNormalizeUrl,
   type ShortLinkStore,
-} from '../../src/lib/urlShortener';
+} from '../../src/lib/urlShortener.js';
 
 export const MAX_REQUEST_BODY_BYTES = 4096;
 export const SHORT_CODE_PATTERN = /^[0-9A-Za-z]{8}$/;
