@@ -19,6 +19,29 @@ export function ProjectDetailPage() {
     );
   }
 
+  const isComplete = project.status === 'Complete';
+  const isPlanned = project.status === 'Planned';
+  const featuresTitle = isComplete
+    ? 'Implemented Features'
+    : isPlanned
+      ? 'Planned Features'
+      : 'Current Feature Scope';
+  const testingTitle = isComplete
+    ? 'Testing and Validation'
+    : isPlanned
+      ? 'Planned Testing Strategy'
+      : 'Testing Strategy';
+  const demoTitle = project.demoUrl
+    ? isComplete
+      ? 'Live project demo'
+      : 'Interactive project demo'
+    : 'Planned project demo';
+  const demoStatus = project.demoUrl
+    ? isComplete
+      ? 'Available'
+      : 'In progress'
+    : 'Planned';
+
   return (
     <section className="space-y-10">
       <div className="space-y-6">
@@ -75,16 +98,16 @@ export function ProjectDetailPage() {
             </p>
 
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-              Live project demo
+              {demoTitle}
             </h2>
           </div>
 
           <span className="rounded-full border border-neutral-800 px-3 py-1 text-sm text-neutral-500">
-            {project.demoUrl ? 'Available' : 'Coming soon'}
+            {demoStatus}
           </span>
         </div>
 
-       <div className="mt-6 flex justify-center rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
+        <div className="mt-6 flex justify-center rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
           {project.slug === 'pathfinding-visualizer' ? (
             <PathfindingVisualizerDemo />
           ) : project.demoUrl ? (
@@ -108,13 +131,11 @@ export function ProjectDetailPage() {
             </div>
           ) : (
             <div className="max-w-2xl text-center">
-              <p className="text-neutral-300">
-                Interactive demo placeholder
-              </p>
+              <p className="text-neutral-300">Demo planned</p>
 
               <p className="mt-2 text-sm leading-6 text-neutral-500">
-                Once this project is built, this area will contain either an embedded
-                live demo, screenshots, or a guided walkthrough.
+                This project has not been implemented yet. A demo or guided
+                walkthrough will be added after the core functionality is built.
               </p>
             </div>
           )}
@@ -122,41 +143,43 @@ export function ProjectDetailPage() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <ListPanel title="Planned Features" items={project.features} />
-        <ListPanel title="Testing Strategy" items={project.testingStrategy} />
+        <ListPanel title={featuresTitle} items={project.features} />
+        <ListPanel title={testingTitle} items={project.testingStrategy} />
       </section>
 
-      <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
-        <p className="text-sm font-medium uppercase tracking-[0.25em] text-neutral-500">
-          Build Plan
-        </p>
+      {!isComplete && (
+        <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-neutral-500">
+            Implementation Plan
+          </p>
 
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-          Tutorial milestones
-        </h2>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+            {isPlanned ? 'Planned milestones' : 'Development milestones'}
+          </h2>
 
-        <ol className="mt-6 grid gap-4 md:grid-cols-2">
-          <Milestone number="01" title="Define requirements" />
-          <Milestone number="02" title="Design data structures" />
-          <Milestone number="03" title="Build core logic" />
-          <Milestone number="04" title="Add tests" />
-          <Milestone number="05" title="Create interactive demo" />
-          <Milestone number="06" title="Write final reflection" />
-        </ol>
+          <ol className="mt-6 grid gap-4 md:grid-cols-2">
+            <Milestone number="01" title="Define requirements" />
+            <Milestone number="02" title="Design data structures" />
+            <Milestone number="03" title="Build core logic" />
+            <Milestone number="04" title="Add tests" />
+            <Milestone number="05" title="Create interactive demo" />
+            <Milestone number="06" title="Write final reflection" />
+          </ol>
+        </section>
+      )}
+
+      <section>
+        <LinkPanel
+          title="Source Code"
+          description={
+            project.repoUrl
+              ? 'View the source code for this project on GitHub.'
+              : 'A GitHub repository will be added when implementation begins.'
+          }
+          linkText={project.repoUrl ? 'View source code' : 'Repository planned'}
+          href={project.repoUrl}
+        />
       </section>
-
-    <section>
-      <LinkPanel
-        title="Source Code"
-        description={
-          project.repoUrl
-            ? 'View the source code for this project on GitHub.'
-            : 'GitHub repository will be linked here once the project repo is created.'
-        }
-        linkText={project.repoUrl ? 'View source code' : 'Repository coming soon'}
-        href={project.repoUrl}
-      />
-    </section>
     </section>
   );
 }
@@ -248,8 +271,16 @@ type StatusBadgeProps = {
 };
 
 function StatusBadge({ status }: StatusBadgeProps) {
+  const statusStyles = {
+    Complete: 'border-white bg-white text-neutral-950',
+    'In Progress': 'border-neutral-500 bg-neutral-800 text-neutral-200',
+    Planned: 'border-neutral-800 bg-neutral-950 text-neutral-500',
+  };
+
   return (
-    <span className="rounded-full border border-neutral-700 bg-white px-3 py-1 text-sm font-medium text-neutral-950">
+    <span
+      className={`rounded-full border px-3 py-1 text-sm font-medium ${statusStyles[status]}`}
+    >
       {status}
     </span>
   );

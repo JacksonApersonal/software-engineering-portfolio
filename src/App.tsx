@@ -7,6 +7,7 @@ import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ResumePage } from './pages/ResumePage';
 import { PathfindingDemoPage } from './pages/PathFindingDemoPage';
+import { UrlShortenerDemoPage } from './pages/UrlShortenerDemoPage';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: 'projects/pathfinding-visualizer/demo',
         Component: PathfindingDemoPage,
+      },
+      {
+        path: 'projects/url-shortener/demo',
+        Component: UrlShortenerDemoPage,
       },
       {
         path: 'projects/:slug',

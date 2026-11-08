@@ -13,8 +13,10 @@ export function PathfindingDemoPage() {
         </h1>
 
         <p className="mt-5 max-w-3xl leading-7 text-neutral-400">
-          Click cells to place or remove walls. The start and end nodes stay
-          fixed for now. Next, we will add BFS to search through the grid.
+          Place walls or weighted terrain, then compare how BFS, Dijkstra, and
+          A* explore the grid. BFS minimizes moves, while Dijkstra and A*
+          account for weighted traversal cost. The start and end nodes remain
+          fixed.
         </p>
       </div>
 

@@ -1,343 +1,29 @@
-import { useState } from 'react';
-
-type CellType =
-  | 'empty'
-  | 'start'
-  | 'end'
-  | 'wall'
-  | 'weight'
-  | 'visited'
-  | 'path';
-
-type GridCell = {
-  row: number;
-  col: number;
-  type: CellType;
-};
-
-type Position = {
-  row: number;
-  col: number;
-};
+import { useEffect, useId, useRef, useState } from 'react';
+import {
+  runAStar,
+  runBreadthFirstSearch,
+  runDijkstra,
+} from './pathfindingAlgorithms';
+import {
+  applySearchVisualization,
+  clearVisualization,
+  colCount,
+  createInitialGrid,
+  editTerrain,
+  getNextGridPosition,
+  getPathMetrics,
+  positionKey,
+  rowCount,
+  startPosition,
+  updateCellVisualization,
+  type CellDisplayType,
+  type EditMode,
+  type GridCell,
+  type GridNavigationKey,
+  type Position,
+} from './pathfindingModel';
 
 type Algorithm = 'BFS' | 'Dijkstra' | 'A*';
-
-const rowCount = 15;
-const colCount = 25;
-
-const startPosition: Position = { row: 7, col: 5 };
-const endPosition: Position = { row: 7, col: 19 };
-
-function createInitialGrid(): GridCell[][] {
-  return Array.from({ length: rowCount }, (_, row) =>
-    Array.from({ length: colCount }, (_, col) => {
-      if (row === startPosition.row && col === startPosition.col) {
-        return { row, col, type: 'start' };
-      }
-
-      if (row === endPosition.row && col === endPosition.col) {
-        return { row, col, type: 'end' };
-      }
-
-      return { row, col, type: 'empty' };
-    }),
-  );
-}
-
-function getNeighbors(position: Position): Position[] {
-  const directions = [
-    { row: -1, col: 0 },
-    { row: 1, col: 0 },
-    { row: 0, col: -1 },
-    { row: 0, col: 1 },
-  ];
-
-  return directions
-    .map((direction) => ({
-      row: position.row + direction.row,
-      col: position.col + direction.col,
-    }))
-    .filter(
-      (neighbor) =>
-        neighbor.row >= 0 &&
-        neighbor.row < rowCount &&
-        neighbor.col >= 0 &&
-        neighbor.col < colCount,
-    );
-}
-
-function positionKey(position: Position) {
-  return `${position.row}-${position.col}`;
-}
-
-function getMovementCost(cell: GridCell) {
-  return cell.type === 'weight' ? 5 : 1;
-}
-
-function getManhattanDistance(a: Position, b: Position) {
-  return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
-}
-
-function runBreadthFirstSearch(grid: GridCell[][]) {
-  const queue: Position[] = [startPosition];
-  const visited = new Set<string>([positionKey(startPosition)]);
-  const previous = new Map<string, Position>();
-
-  const visitedOrder: Position[] = [];
-
-  while (queue.length > 0) {
-    const current = queue.shift();
-
-    if (!current) {
-      break;
-    }
-
-    if (current.row === endPosition.row && current.col === endPosition.col) {
-      return {
-        visitedOrder,
-        path: buildPath(previous),
-      };
-    }
-
-    const neighbors = getNeighbors(current);
-
-    for (const neighbor of neighbors) {
-      const key = positionKey(neighbor);
-      const neighborCell = grid[neighbor.row][neighbor.col];
-
-      if (visited.has(key) || neighborCell.type === 'wall') {
-        continue;
-      }
-
-      visited.add(key);
-      previous.set(key, current);
-
-      if (neighborCell.type !== 'end') {
-        visitedOrder.push(neighbor);
-      }
-
-      queue.push(neighbor);
-    }
-  }
-
-  return {
-    visitedOrder,
-    path: [],
-  };
-}
-
-function runDijkstra(grid: GridCell[][]) {
-  const distances = new Map<string, number>();
-  const previous = new Map<string, Position>();
-  const unvisited: Position[] = [];
-  const visitedOrder: Position[] = [];
-
-  for (let row = 0; row < rowCount; row += 1) {
-    for (let col = 0; col < colCount; col += 1) {
-      const cell = grid[row][col];
-
-      if (cell.type !== 'wall') {
-        const position = { row, col };
-        const key = positionKey(position);
-
-        distances.set(key, Number.POSITIVE_INFINITY);
-        unvisited.push(position);
-      }
-    }
-  }
-
-  distances.set(positionKey(startPosition), 0);
-
-  while (unvisited.length > 0) {
-    unvisited.sort(
-      (a, b) =>
-        (distances.get(positionKey(a)) ?? Number.POSITIVE_INFINITY) -
-        (distances.get(positionKey(b)) ?? Number.POSITIVE_INFINITY),
-    );
-
-    const current = unvisited.shift();
-
-    if (!current) {
-      break;
-    }
-
-    const currentDistance =
-      distances.get(positionKey(current)) ?? Number.POSITIVE_INFINITY;
-
-    if (currentDistance === Number.POSITIVE_INFINITY) {
-      break;
-    }
-
-    if (current.row === endPosition.row && current.col === endPosition.col) {
-      return {
-        visitedOrder,
-        path: buildPath(previous),
-      };
-    }
-
-    if (
-      !(current.row === startPosition.row && current.col === startPosition.col)
-    ) {
-      visitedOrder.push(current);
-    }
-
-    const neighbors = getNeighbors(current);
-
-    for (const neighbor of neighbors) {
-      const neighborCell = grid[neighbor.row][neighbor.col];
-
-      if (neighborCell.type === 'wall') {
-        continue;
-      }
-
-      const neighborKey = positionKey(neighbor);
-      const newDistance = currentDistance + getMovementCost(neighborCell);
-      const oldDistance =
-        distances.get(neighborKey) ?? Number.POSITIVE_INFINITY;
-
-      if (newDistance < oldDistance) {
-        distances.set(neighborKey, newDistance);
-        previous.set(neighborKey, current);
-      }
-    }
-  }
-
-  return {
-    visitedOrder,
-    path: [],
-  };
-}
-
-function runAStar(grid: GridCell[][]) {
-  const openSet: Position[] = [startPosition];
-
-  const gScore = new Map<string, number>();
-  const fScore = new Map<string, number>();
-  const previous = new Map<string, Position>();
-  const visited = new Set<string>();
-
-  const visitedOrder: Position[] = [];
-
-  for (let row = 0; row < rowCount; row += 1) {
-    for (let col = 0; col < colCount; col += 1) {
-      const cell = grid[row][col];
-
-      if (cell.type !== 'wall') {
-        const position = { row, col };
-        const key = positionKey(position);
-
-        gScore.set(key, Number.POSITIVE_INFINITY);
-        fScore.set(key, Number.POSITIVE_INFINITY);
-      }
-    }
-  }
-
-  gScore.set(positionKey(startPosition), 0);
-  fScore.set(
-    positionKey(startPosition),
-    getManhattanDistance(startPosition, endPosition),
-  );
-
-  while (openSet.length > 0) {
-    openSet.sort(
-      (a, b) =>
-        (fScore.get(positionKey(a)) ?? Number.POSITIVE_INFINITY) -
-        (fScore.get(positionKey(b)) ?? Number.POSITIVE_INFINITY),
-    );
-
-    const current = openSet.shift();
-
-    if (!current) {
-      break;
-    }
-
-    const currentKey = positionKey(current);
-
-    if (visited.has(currentKey)) {
-      continue;
-    }
-
-    visited.add(currentKey);
-
-    if (current.row === endPosition.row && current.col === endPosition.col) {
-      return {
-        visitedOrder,
-        path: buildPath(previous),
-      };
-    }
-
-    if (
-      !(current.row === startPosition.row && current.col === startPosition.col)
-    ) {
-      visitedOrder.push(current);
-    }
-
-    const neighbors = getNeighbors(current);
-
-    for (const neighbor of neighbors) {
-      const neighborCell = grid[neighbor.row][neighbor.col];
-
-      if (neighborCell.type === 'wall') {
-        continue;
-      }
-
-      const neighborKey = positionKey(neighbor);
-
-      if (visited.has(neighborKey)) {
-        continue;
-      }
-
-      const currentGScore =
-        gScore.get(currentKey) ?? Number.POSITIVE_INFINITY;
-
-      const tentativeGScore = currentGScore + getMovementCost(neighborCell);
-      const oldGScore =
-        gScore.get(neighborKey) ?? Number.POSITIVE_INFINITY;
-
-      if (tentativeGScore < oldGScore) {
-        previous.set(neighborKey, current);
-        gScore.set(neighborKey, tentativeGScore);
-        fScore.set(
-          neighborKey,
-          tentativeGScore + getManhattanDistance(neighbor, endPosition),
-        );
-
-        openSet.push(neighbor);
-      }
-    }
-  }
-
-  return {
-    visitedOrder,
-    path: [],
-  };
-}
-
-function buildPath(previous: Map<string, Position>) {
-  const path: Position[] = [];
-  let current: Position | undefined = endPosition;
-
-  while (current) {
-    const key = positionKey(current);
-    const previousPosition = previous.get(key);
-
-    if (!previousPosition) {
-      break;
-    }
-
-    if (
-      previousPosition.row === startPosition.row &&
-      previousPosition.col === startPosition.col
-    ) {
-      break;
-    }
-
-    path.unshift(previousPosition);
-    current = previousPosition;
-  }
-
-  return path;
-}
 
 export function PathfindingVisualizerDemo() {
   const [grid, setGrid] = useState<GridCell[][]>(() => createInitialGrid());
@@ -346,43 +32,98 @@ export function PathfindingVisualizerDemo() {
     'Place walls, then run BFS to find the shortest path.',
   );
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm>('BFS');
+  const [selectedEditMode, setSelectedEditMode] = useState<EditMode>('wall');
+  const [activeGridPosition, setActiveGridPosition] =
+    useState<Position>(startPosition);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  const animationTimersRef = useRef<number[]>([]);
+  const gridCellRefs = useRef(new Map<string, HTMLButtonElement>());
+  const instructionsId = useId();
 
-  function handleCellClick(
-    row: number,
-    col: number,
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) {
+  useEffect(
+    () => () => {
+      animationTimersRef.current.forEach((timerId) =>
+        window.clearTimeout(timerId),
+      );
+      animationTimersRef.current = [];
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = (event: MediaQueryListEvent) =>
+      setPrefersReducedMotion(event.matches);
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  function clearAnimationTimers() {
+    animationTimersRef.current.forEach((timerId) =>
+      window.clearTimeout(timerId),
+    );
+    animationTimersRef.current = [];
+  }
+
+  function scheduleAnimation(callback: () => void, delay: number) {
+    const timerId = window.setTimeout(() => {
+      animationTimersRef.current = animationTimersRef.current.filter(
+        (activeTimerId) => activeTimerId !== timerId,
+      );
+      callback();
+    }, delay);
+
+    animationTimersRef.current.push(timerId);
+  }
+
+  function handleCellClick(row: number, col: number) {
     if (isRunning) {
       return;
     }
 
-    setMessage('Grid updated. Run an algorithm to calculate a path.');
+    const selectedCell = grid[row][col];
 
-    setGrid((currentGrid) =>
-      clearPathFromGrid(currentGrid).map((gridRow) =>
-        gridRow.map((cell) => {
-          if (cell.row !== row || cell.col !== col) {
-            return cell;
-          }
+    if (selectedCell.terrain === 'start' || selectedCell.terrain === 'end') {
+      setMessage('The start and end positions are fixed.');
+      return;
+    }
 
-          if (cell.type === 'start' || cell.type === 'end') {
-            return cell;
-          }
-
-          if (event.altKey) {
-            return {
-              ...cell,
-              type: cell.type === 'weight' ? 'empty' : 'weight',
-            };
-          }
-
-          return {
-            ...cell,
-            type: cell.type === 'wall' ? 'empty' : 'wall',
-          };
-        }),
-      ),
+    setMessage(
+      `${selectedEditMode === 'wall' ? 'Wall' : 'Weight'} terrain updated. Run an algorithm to calculate a path.`,
     );
+    setGrid((currentGrid) =>
+      editTerrain(currentGrid, { row, col }, selectedEditMode),
+    );
+  }
+
+  function handleGridKeyDown(
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    position: Position,
+  ) {
+    if (!isGridNavigationKey(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const nextPosition = getNextGridPosition(position, event.key);
+    setActiveGridPosition(nextPosition);
+    gridCellRefs.current.get(positionKey(nextPosition))?.focus();
+  }
+
+  function getResultMessage(
+    algorithm: Algorithm,
+    searchGrid: GridCell[][],
+    path: Position[],
+  ) {
+    if (path.length === 0) {
+      return 'No path found. Try removing some walls.';
+    }
+
+    const { steps, weightedCost } = getPathMetrics(searchGrid, path);
+    return `${algorithm} found a path. Steps: ${steps}. Weighted cost: ${weightedCost}.`;
   }
 
   function clearGrid() {
@@ -390,6 +131,7 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
+    clearAnimationTimers();
     setGrid(createInitialGrid());
     setMessage('Grid reset. Place walls, then run BFS to find the shortest path.');
   }
@@ -399,23 +141,9 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
-    setGrid((currentGrid) => clearPathFromGrid(currentGrid));
-    setMessage('Path cleared. Walls were preserved.');
-  }
-
-  function clearPathFromGrid(currentGrid: GridCell[][]) {
-    return currentGrid.map((gridRow) =>
-      gridRow.map((cell) => {
-        if (cell.type === 'visited' || cell.type === 'path') {
-          return {
-            ...cell,
-            type: 'empty' as CellType,
-          };
-        }
-
-        return cell;
-      }),
-    );
+    clearAnimationTimers();
+    setGrid((currentGrid) => clearVisualization(currentGrid));
+    setMessage('Path cleared. Walls and weights were preserved.');
   }
 
   function runSelectedAlgorithm() {
@@ -423,7 +151,8 @@ export function PathfindingVisualizerDemo() {
       return;
     }
 
-    const cleanedGrid = clearPathFromGrid(grid);
+    clearAnimationTimers();
+    const cleanedGrid = clearVisualization(grid);
 
     const result =
       selectedAlgorithm === 'BFS'
@@ -432,80 +161,92 @@ export function PathfindingVisualizerDemo() {
           ? runDijkstra(cleanedGrid)
           : runAStar(cleanedGrid);
 
+    if (prefersReducedMotion) {
+      setGrid(
+        applySearchVisualization(
+          cleanedGrid,
+          result.visitedOrder,
+          result.path,
+        ),
+      );
+      setMessage(
+        getResultMessage(selectedAlgorithm, cleanedGrid, result.path),
+      );
+      setIsRunning(false);
+      return;
+    }
+
     setIsRunning(true);
     setMessage(`Running ${selectedAlgorithm}...`);
     setGrid(cleanedGrid);
 
-    animateSearch(result.visitedOrder, result.path);
+    animateSearch(
+      result.visitedOrder,
+      result.path,
+      cleanedGrid,
+      selectedAlgorithm,
+    );
   }
 
-  function animateSearch(visitedOrder: Position[], path: Position[]) {
+  function animateSearch(
+    visitedOrder: Position[],
+    path: Position[],
+    searchGrid: GridCell[][],
+    algorithm: Algorithm,
+  ) {
     visitedOrder.forEach((position, index) => {
-      window.setTimeout(() => {
+      scheduleAnimation(() => {
         setGrid((currentGrid) =>
-          updateCellType(currentGrid, position, 'visited'),
+          updateCellVisualization(currentGrid, position, 'visited'),
         );
 
         if (index === visitedOrder.length - 1) {
-          animatePath(path);
+          animatePath(path, searchGrid, algorithm);
         }
       }, index * 25);
     });
 
     if (visitedOrder.length === 0) {
-      animatePath(path);
+      animatePath(path, searchGrid, algorithm);
     }
   }
 
-  function animatePath(path: Position[]) {
+  function animatePath(
+    path: Position[],
+    searchGrid: GridCell[][],
+    algorithm: Algorithm,
+  ) {
     if (path.length === 0) {
-      window.setTimeout(() => {
-        setMessage('No path found. Try removing some walls.');
+      scheduleAnimation(() => {
+        setMessage(getResultMessage(algorithm, searchGrid, path));
         setIsRunning(false);
       }, 300);
 
       return;
     }
 
-    path.forEach((position, index) => {
-      window.setTimeout(() => {
-        setGrid((currentGrid) => updateCellType(currentGrid, position, 'path'));
+    const pathToAnimate = path.slice(1, -1);
+    const finishAnimation = () => {
+      setMessage(getResultMessage(algorithm, searchGrid, path));
+      setIsRunning(false);
+    };
 
-        if (index === path.length - 1) {
-          setMessage(
-            `${selectedAlgorithm} found a path. Shortest path length: ${path.length} cells.`,
-          );
-          setIsRunning(false);
+    if (pathToAnimate.length === 0) {
+      scheduleAnimation(finishAnimation, 0);
+      return;
+    }
+
+    pathToAnimate.forEach((position, index) => {
+      scheduleAnimation(() => {
+        setGrid((currentGrid) =>
+          updateCellVisualization(currentGrid, position, 'path'),
+        );
+
+        if (index === pathToAnimate.length - 1) {
+          finishAnimation();
         }
       }, index * 40);
     });
-  }
-
-  function updateCellType(
-    currentGrid: GridCell[][],
-    position: Position,
-    type: CellType,
-  ) {
-    return currentGrid.map((gridRow) =>
-      gridRow.map((cell) => {
-        if (cell.row !== position.row || cell.col !== position.col) {
-          return cell;
-        }
-
-        if (cell.type === 'start' || cell.type === 'end' || cell.type === 'wall') {
-          return cell;
-        }
-
-        if (cell.type === 'weight' && type === 'visited') {
-          return cell;
-        }
-
-        return {
-          ...cell,
-          type,
-        };
-      }),
-    );
   }
 
   return (
@@ -516,16 +257,29 @@ export function PathfindingVisualizerDemo() {
             Interactive Grid Demo
           </h3>
 
-          <p className="mt-2 text-sm leading-6 text-neutral-400">
-            Click cells to place walls. Alt-click cells to place weighted terrain.
-            Compare BFS, Dijkstra, and A* to see how each algorithm searches the grid.
+          <p
+            id={instructionsId}
+            className="mt-2 text-sm leading-6 text-neutral-400"
+          >
+            Choose Wall or Weight mode, then click or tap cells to edit terrain.
+            Keyboard users can enter the grid once, move with the arrow keys,
+            and press Enter or Space to edit the focused cell.
           </p>
 
-          <p className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300">
+          <p
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-300"
+          >
             {message}
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div
+            role="group"
+            aria-label="Pathfinding algorithm"
+            className="mt-4 flex flex-wrap gap-2"
+          >
             {(['BFS', 'Dijkstra', 'A*'] as Algorithm[]).map((algorithm) => {
               const isSelected = selectedAlgorithm === algorithm;
 
@@ -540,7 +294,7 @@ export function PathfindingVisualizerDemo() {
 
                     setSelectedAlgorithm(algorithm);
 
-                   if (algorithm === 'BFS') {
+                    if (algorithm === 'BFS') {
                       setMessage(
                         'BFS selected. It ignores weights and finds the shortest path by number of steps.',
                       );
@@ -555,6 +309,7 @@ export function PathfindingVisualizerDemo() {
                     }
                   }}
                   disabled={isRunning}
+                  aria-pressed={isSelected}
                   className={
                     isSelected
                       ? 'rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400'
@@ -562,6 +317,42 @@ export function PathfindingVisualizerDemo() {
                   }
                 >
                   {algorithm}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            role="group"
+            aria-label="Terrain editing mode"
+            className="mt-3 flex flex-wrap items-center gap-2"
+          >
+            <span className="mr-1 text-sm text-neutral-500">Edit mode:</span>
+            {(['wall', 'weight'] as EditMode[]).map((editMode) => {
+              const isSelected = selectedEditMode === editMode;
+              const label = editMode === 'wall' ? 'Wall' : 'Weight';
+
+              return (
+                <button
+                  key={editMode}
+                  type="button"
+                  onClick={() => {
+                    if (isRunning) {
+                      return;
+                    }
+
+                    setSelectedEditMode(editMode);
+                    setMessage(`${label} editing mode selected.`);
+                  }}
+                  disabled={isRunning}
+                  aria-pressed={isSelected}
+                  className={
+                    isSelected
+                      ? 'rounded-xl bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400'
+                      : 'rounded-xl border border-neutral-800 px-3 py-1.5 text-sm font-medium text-neutral-400 transition hover:border-neutral-600 hover:text-white disabled:cursor-not-allowed disabled:text-neutral-700'
+                  }
+                >
+                  {label}
                 </button>
               );
             })}
@@ -614,22 +405,68 @@ export function PathfindingVisualizerDemo() {
       <div className="overflow-x-auto">
         <div className="inline-block rounded-xl border border-neutral-800 bg-neutral-950/70 p-4">
           <div
+            role="grid"
+            aria-label="Pathfinding terrain grid"
+            aria-describedby={instructionsId}
+            aria-rowcount={rowCount}
+            aria-colcount={colCount}
+            aria-busy={isRunning}
             className="grid gap-1"
             style={{
               gridTemplateColumns: `repeat(${colCount}, 1.75rem)`,
             }}
           >
-            {grid.flat().map((cell) => (
-              <button
-                key={`${cell.row}-${cell.col}`}
-                type="button"
-                onClick={(event) => handleCellClick(cell.row, cell.col, event)}
-                className={`h-7 w-7 rounded-md border transition ${getCellClassName(
-                  cell.type,
-                )}`}
-                aria-label={`Row ${cell.row}, column ${cell.col}, ${cell.type}`}
-              />
-            ))}
+            {grid.flat().map((cell) => {
+              const displayType = cell.visualization ?? cell.terrain;
+              const terrainDescription = cell.visualization
+                ? `, ${cell.terrain} terrain`
+                : '';
+              const isActiveCell =
+                activeGridPosition.row === cell.row &&
+                activeGridPosition.col === cell.col;
+              const editDescription =
+                cell.terrain === 'start' || cell.terrain === 'end'
+                  ? ', fixed position'
+                  : `, activate to toggle ${selectedEditMode} terrain`;
+
+              return (
+                <div
+                  key={`${cell.row}-${cell.col}`}
+                  role="gridcell"
+                  aria-rowindex={cell.row + 1}
+                  aria-colindex={cell.col + 1}
+                >
+                  <button
+                    ref={(element) => {
+                      const key = positionKey(cell);
+
+                      if (element) {
+                        gridCellRefs.current.set(key, element);
+                      } else {
+                        gridCellRefs.current.delete(key);
+                      }
+                    }}
+                    type="button"
+                    tabIndex={isActiveCell ? 0 : -1}
+                    onFocus={() =>
+                      setActiveGridPosition({ row: cell.row, col: cell.col })
+                    }
+                    onKeyDown={(event) =>
+                      handleGridKeyDown(event, {
+                        row: cell.row,
+                        col: cell.col,
+                      })
+                    }
+                    onClick={() => handleCellClick(cell.row, cell.col)}
+                    aria-disabled={isRunning}
+                    aria-label={`Row ${cell.row + 1}, column ${cell.col + 1}, ${displayType}${terrainDescription}${editDescription}`}
+                    className={`h-7 w-7 rounded-md border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${getCellClassName(
+                      displayType,
+                    )}`}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -651,7 +488,7 @@ function LegendItem({ label, className }: LegendItemProps) {
   );
 }
 
-function getCellClassName(type: CellType) {
+function getCellClassName(type: CellDisplayType) {
   switch (type) {
     case 'start':
       return 'border-white bg-white';
@@ -669,4 +506,13 @@ function getCellClassName(type: CellType) {
     default:
       return 'border-neutral-800 bg-neutral-950 hover:border-neutral-500 hover:bg-neutral-900';
   }
+}
+
+function isGridNavigationKey(key: string): key is GridNavigationKey {
+  return (
+    key === 'ArrowUp' ||
+    key === 'ArrowDown' ||
+    key === 'ArrowLeft' ||
+    key === 'ArrowRight'
+  );
 }

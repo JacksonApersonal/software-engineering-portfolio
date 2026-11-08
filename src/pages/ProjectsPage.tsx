@@ -34,9 +34,10 @@ export function ProjectsPage() {
           </h1>
 
           <p className="mt-5 max-w-3xl leading-7 text-neutral-400">
-            Each project is designed to demonstrate a different area of software
-            engineering: algorithms, backend systems, real-time communication,
-            data modeling, testing, and clean architecture.
+            Completed and planned projects cover algorithms, backend systems,
+            real-time communication, data modeling, testing, and clean
+            architecture. Status badges distinguish implemented work from future
+            project scope.
           </p>
         </div>
 

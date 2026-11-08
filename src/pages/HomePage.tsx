@@ -3,7 +3,9 @@ import { ProjectCard } from '../components/ProjectCard';
 import { projects } from '../data/projects';
 
 export function HomePage() {
-  const featuredProjects = projects.slice(0, 2);
+  const featuredProjects = projects.filter(
+    (project) => project.status === 'Complete',
+  );
 
   return (
     <section className="space-y-16">
@@ -58,7 +60,7 @@ export function HomePage() {
       </div>
 
       <section className="grid gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 md:grid-cols-3">
-        <StatCard label="Languages" value="4" detail="TypeScript, Python, Java, C#" />
+        <StatCard label="Languages" value="3" detail="TypeScript, Java, C#" />
         <StatCard label="Project Style" value="Hands-on" detail="Demos, writeups, tests, and source code." />
         <StatCard label="Goal" value="Job-ready" detail="Built to show practical engineering ability." />
       </section>
