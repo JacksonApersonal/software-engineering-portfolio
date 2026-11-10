@@ -1,29 +1,10 @@
-import { useState } from 'react';
-
 import { ProjectCard } from '../components/ProjectCard';
 import { projects } from '../data/projects';
 
-type ProjectStatusFilter = 'All' | 'Complete' | 'In Progress' | 'Planned';
-
-const filters: ProjectStatusFilter[] = [
-  'All',
-  'Complete',
-  'In Progress',
-  'Planned',
-];
-
 export function ProjectsPage() {
-  const [selectedFilter, setSelectedFilter] =
-    useState<ProjectStatusFilter>('All');
-
-  const filteredProjects =
-    selectedFilter === 'All'
-      ? projects
-      : projects.filter((project) => project.status === selectedFilter);
-
   return (
     <section className="space-y-10">
-      <div className="flex flex-wrap items-end justify-between gap-6">
+      <div>
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-neutral-500">
             Projects
@@ -34,50 +15,19 @@ export function ProjectsPage() {
           </h1>
 
           <p className="mt-5 max-w-3xl leading-7 text-neutral-400">
-            Completed and planned projects cover algorithms, backend systems,
-            third-party API integration, OAuth, data visualization, testing,
-            and clean architecture. Status badges distinguish implemented work
-            from future project scope.
+            Three completed projects demonstrate algorithm design, persistent
+            backend services, third-party API integration, secure OAuth,
+            responsive React interfaces, and focused automated testing. Each
+            project includes a working interactive demo and source code.
           </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter;
-
-            return (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setSelectedFilter(filter)}
-                className={
-                  isSelected
-                    ? 'rounded-xl bg-white px-4 py-2 text-sm font-medium text-neutral-950'
-                    : 'rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-400 transition hover:border-neutral-600 hover:text-white'
-                }
-              >
-                {filter}
-              </button>
-            );
-          })}
         </div>
       </div>
 
-      {filteredProjects.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2">
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-2xl border border-dashed border-neutral-800 bg-neutral-900/40 p-8 text-center">
-          <h2 className="text-xl font-semibold text-white">No projects found</h2>
-
-          <p className="mt-3 text-neutral-400">
-            There are no projects with this status yet.
-          </p>
-        </div>
-      )}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <ProjectCard key={project.slug} project={project} />
+        ))}
+      </div>
     </section>
   );
 }

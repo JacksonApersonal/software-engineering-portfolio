@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import { Layout } from './components/Layout';
 import { AboutPage } from './pages/AboutPage';
 import { HomePage } from './pages/HomePage';
+import { NotFoundPage, RouteErrorPage } from './pages/ErrorPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ResumePage } from './pages/ResumePage';
@@ -13,6 +14,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     Component: Layout,
+    ErrorBoundary: RouteErrorPage,
     children: [
       {
         index: true,
@@ -41,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: 'resume',
         Component: ResumePage,
+      },
+      {
+        path: '*',
+        Component: NotFoundPage,
       },
     ],
   },

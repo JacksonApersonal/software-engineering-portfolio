@@ -33,10 +33,10 @@ export const projects: Project[] = [
       'Algorithm selector with status messages explaining current behavior.',
     ],
     testingStrategy: [
-      'Eleven Vitest regression tests covering path reconstruction, metrics, terrain preservation, search behavior, and accessible interactions.',
+      'Vitest model and algorithm regression tests cover path reconstruction, metrics, terrain preservation, and search behavior.',
       'A one-step adjacent path test verifies endpoint-inclusive reconstruction and move counting.',
       'A weighted-grid test verifies that BFS minimizes moves while Dijkstra and A* minimize traversal cost.',
-      'Unreachable-target cases are verified separately for BFS, Dijkstra, and A*.',
+      'Model-level tests verify terrain editing and arrow-key position calculations; rendered focus behavior and grid semantics are verified manually in the browser.',
     ],
     status: 'Complete',
     repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio/tree/main/src/components/demos',
@@ -61,11 +61,11 @@ export const projects: Project[] = [
       'Clipboard support and direct access to each generated short link.',
     ],
     testingStrategy: [
-      'The repository currently has 63 passing Vitest tests covering the URL shortener, pathfinding visualizer, and backend import regression guard.',
       'Vitest coverage for URL normalization, validation, code generation, collisions, and retry exhaustion.',
       'Handler tests for creation, redirects, malformed requests, method restrictions, rate limits, storage failures, and HEAD behavior.',
       'Redis adapter tests verify SET NX reservation semantics and atomic expiring rate-limit counters.',
       'Client tests verify request payloads, API response parsing, local validation, and user-facing error categories.',
+      'Manual production verification confirms persistent Redis-backed links and working server-side redirects.',
     ],
     status: 'Complete',
     repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
@@ -76,7 +76,7 @@ export const projects: Project[] = [
     title: 'Spotify Music Dashboard',
     language: 'TypeScript',
     summary:
-      'An in-progress React and TypeScript dashboard for exploring top Spotify artists and tracks through secure server-side OAuth.',
+      'A production-verified React and TypeScript dashboard for exploring top Spotify artists and tracks through secure server-side OAuth.',
     problem:
       'Listening data is difficult to interpret when it is spread across individual tracks, artists, and profile views without a focused visual summary.',
     solution:
@@ -98,9 +98,9 @@ export const projects: Project[] = [
       'Vitest coverage for OAuth state handling, token exchange and refresh, encrypted sessions, cookies, and malformed configuration.',
       'Handler tests cover callback validation, authenticated dashboard data, all time ranges, Development Mode restrictions, throttling, expired sessions, and logout.',
       'Frontend client tests verify credentialed requests, response parsing, safe error categories, abort handling, and logout behavior.',
-      'Production login and data-loading verification remains required before the project is marked complete.',
+      'Manual production verification confirms the OAuth login flow and authenticated Spotify data loading.',
     ],
-    status: 'In Progress',
+    status: 'Complete',
     repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
   },
 ];

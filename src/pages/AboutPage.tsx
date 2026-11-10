@@ -12,18 +12,18 @@ export function AboutPage() {
         </h1>
 
         <p className="text-lg leading-8 text-neutral-400">
-          My work centers on building practical software, learning new systems
-          quickly, and improving reliability through thoughtful design,
-          debugging, and testing. I enjoy understanding how software behaves in
-          the real world and building solutions that are maintainable,
-          dependable, and useful.
+          Professionally, I work across C#/.NET applications, ASP.NET Core APIs,
+          system integrations, UI automation, and release validation. In this
+          portfolio, I applied the same debugging and testing mindset to a
+          pathfinding visualizer, a Redis-backed URL shortener, and a Spotify
+          dashboard with server-side OAuth.
         </p>
       </div>
 
       <section className="grid gap-6 md:grid-cols-3">
         <AboutCard
           title="Backend & APIs"
-          description="Experience working with ASP.NET Core APIs, data models, service logic, integrations, and backend workflows."
+          description="Experience with ASP.NET Core APIs and integrations, plus portfolio work using Vercel Functions, Redis, request validation, and OAuth token flows."
         />
 
         <AboutCard
@@ -33,7 +33,7 @@ export function AboutPage() {
 
         <AboutCard
           title="Testing & Quality"
-          description="Strong interest in unit testing, integration testing, automated UI testing, test strategy, and catching bugs early."
+          description="Professional experience with integration and UI automation, reinforced by focused unit, handler, adapter, and client tests in this portfolio."
         />
       </section>
 
@@ -52,11 +52,13 @@ export function AboutPage() {
               'XAML',
               'TypeScript',
               'React',
+              'Vercel Functions',
+              'Redis',
+              'OAuth 2.0',
               'Python',
               'Java',
               'SQL',
               'REST APIs',
-              'SignalR',
               'Automated Testing',
               'Debugging',
               'Git',
@@ -103,10 +105,10 @@ export function AboutPage() {
         </h2>
 
         <p className="mt-5 max-w-4xl leading-7 text-neutral-400">
-          I am interested in software engineering roles where I can contribute
-          to backend, full-stack, platform, application, automation, testing,
-          or developer tooling work while continuing to grow across different
-          technologies and product areas.
+          I am interested in teams where I can contribute to APIs, user-facing
+          applications, platform tooling, or test infrastructure while taking
+          ownership of debugging, implementation, and validation from initial
+          requirements through release.
         </p>
       </section>
     </section>

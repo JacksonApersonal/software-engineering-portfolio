@@ -10,8 +10,14 @@ const navLinks = [
 export function Navbar() {
   return (
     <header className="border-b border-neutral-800 bg-neutral-950/95 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link to="/" className="text-lg font-semibold tracking-tight text-white">
+      <nav
+        aria-label="Primary navigation"
+        className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <Link
+          to="/"
+          className="inline-flex min-h-11 items-center rounded-lg text-lg font-semibold tracking-tight text-white"
+        >
           Jackson Acord
         </Link>
 
@@ -23,8 +29,8 @@ export function Navbar() {
               end={link.end}
               className={({ isActive }) =>
                 isActive
-                  ? 'rounded-lg bg-white px-3 py-1.5 font-medium text-neutral-950'
-                  : 'rounded-lg px-3 py-1.5 text-neutral-400 transition hover:bg-neutral-900 hover:text-white'
+                  ? 'inline-flex min-h-11 items-center rounded-lg bg-white px-3 py-2 font-medium text-neutral-950'
+                  : 'inline-flex min-h-11 items-center rounded-lg px-3 py-2 text-neutral-400 transition hover:bg-neutral-900 hover:text-white'
               }
             >
               {link.label}

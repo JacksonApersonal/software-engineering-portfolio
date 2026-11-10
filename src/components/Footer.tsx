@@ -22,7 +22,7 @@ export function Footer() {
         <div className="flex flex-wrap gap-3">
           <a
             href="mailto:jacord2001@gmail.com"
-            className="rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            className="inline-flex min-h-11 items-center rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
           >
             Email
           </a>
@@ -31,7 +31,7 @@ export function Footer() {
             href="https://linkedin.com/in/jackson-acord-b0baa2262"
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            className="inline-flex min-h-11 items-center rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
           >
             LinkedIn
           </a>
@@ -40,14 +40,14 @@ export function Footer() {
             href="https://github.com/JacksonApersonal"
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            className="inline-flex min-h-11 items-center rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
           >   
             GitHub
           </a>
 
           <Link
             to="/resume"
-            className="rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
+            className="inline-flex min-h-11 items-center rounded-xl border border-neutral-800 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-white"
           >
             Resume
           </Link>

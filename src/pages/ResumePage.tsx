@@ -63,7 +63,15 @@ export function ResumePage() {
         <div className="mt-6 grid gap-6 md:grid-cols-2">
           <SkillGroup
             title="Programming"
-            skills={['C#', 'Python', 'C++', 'JavaScript', 'HTML', 'CSS']}
+            skills={[
+              'C#',
+              'TypeScript',
+              'JavaScript',
+              'Python',
+              'C++',
+              'HTML',
+              'CSS',
+            ]}
           />
 
           <SkillGroup
@@ -98,6 +106,18 @@ export function ResumePage() {
               'Confluence',
               'Visual Studio',
               'Postman',
+            ]}
+          />
+
+          <SkillGroup
+            title="Portfolio Technologies"
+            skills={[
+              'React',
+              'Vite',
+              'Tailwind CSS',
+              'Vercel',
+              'Redis',
+              'OAuth 2.0',
             ]}
           />
         </div>

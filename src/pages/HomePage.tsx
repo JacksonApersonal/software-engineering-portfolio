@@ -21,11 +21,11 @@ export function HomePage() {
           </h1>
 
           <p className="max-w-3xl text-lg leading-8 text-neutral-400">
-            I am a software engineer focused on building dependable software,
-            solving practical problems, and contributing across the stack. This
-            portfolio showcases work in backend systems, application
-            development, testing, and full-stack projects across multiple
-            languages and frameworks.
+            I build C#/.NET applications and APIs professionally, with hands-on
+            experience in integration testing, UI automation, release
+            validation, and production debugging. These projects extend that
+            work into React interfaces, serverless APIs, Redis persistence,
+            OAuth, and algorithm visualization.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -51,18 +51,18 @@ export function HomePage() {
           </p>
 
           <div className="mt-6 space-y-4">
-            <SkillItem title="Backend Systems" description="APIs, data modeling, service design, and reliability." />
-            <SkillItem title="Application Development" description="User-facing software, debugging, workflow design, and maintainable implementation." />
-            <SkillItem title="Automated Testing" description="Unit tests, integration tests, UI testing, and test strategy." />
-            <SkillItem title="Algorithms" description="Graph traversal, pathfinding, optimization, and visualization." />
+            <SkillItem title="Backend Systems" description="ASP.NET Core APIs, Vercel Functions, Redis persistence, OAuth, and service reliability." />
+            <SkillItem title="Application Development" description="C# desktop applications and responsive React interfaces built around real user workflows." />
+            <SkillItem title="Automated Testing" description="Unit, integration, API, regression, and UI automation across production and portfolio code." />
+            <SkillItem title="Problem Solving" description="Production debugging, API integration, pathfinding algorithms, and failure-state design." />
           </div>
         </aside>
       </div>
 
       <section className="grid gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 md:grid-cols-3">
-        <StatCard label="Languages" value="3" detail="TypeScript, Java, C#" />
-        <StatCard label="Project Style" value="Hands-on" detail="Demos, writeups, tests, and source code." />
-        <StatCard label="Goal" value="Job-ready" detail="Built to show practical engineering ability." />
+        <StatCard label="Working Projects" value="3" detail="Interactive demos backed by tested implementation." />
+        <StatCard label="Engineering Scope" value="Full Stack" detail="React, serverless APIs, Redis, OAuth, and algorithms." />
+        <StatCard label="Validation" value="Automated" detail="Model, domain, client, adapter, and handler tests." />
       </section>
 
       <section className="space-y-6">
@@ -85,7 +85,7 @@ export function HomePage() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featuredProjects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}
@@ -103,9 +103,9 @@ export function HomePage() {
             </h2>
 
             <p className="mt-3 max-w-2xl leading-7 text-neutral-400">
-                I am open to software engineering opportunities across backend,
-                full-stack, platform, application, automation, and testing
-                work where I can build reliable products and keep learning.
+                I am open to backend, full-stack, platform, and application
+                engineering roles where I can contribute production debugging,
+                API development, test automation, and thoughtful feature delivery.
             </p>
             </div>
 

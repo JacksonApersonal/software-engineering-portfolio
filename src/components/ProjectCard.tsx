@@ -37,7 +37,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       <p className="mt-auto pt-6 text-sm font-medium text-neutral-500 transition group-hover:text-neutral-300">
-        View project →
+        View project and interactive demo →
       </p>
     </Link>
   );
