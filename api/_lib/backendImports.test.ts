@@ -6,6 +6,12 @@ const productionModules = [
   new URL('../redirect.ts', import.meta.url),
   new URL('./handlers.ts', import.meta.url),
   new URL('./upstash.ts', import.meta.url),
+  new URL('./spotifyAuth.ts', import.meta.url),
+  new URL('./spotifyHandlers.ts', import.meta.url),
+  new URL('../spotify/login.ts', import.meta.url),
+  new URL('../spotify/callback.ts', import.meta.url),
+  new URL('../spotify/dashboard.ts', import.meta.url),
+  new URL('../spotify/logout.ts', import.meta.url),
   new URL('../../src/lib/urlShortener.ts', import.meta.url),
 ];
 

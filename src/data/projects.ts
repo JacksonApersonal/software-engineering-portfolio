@@ -47,11 +47,11 @@ export const projects: Project[] = [
     title: 'URL Shortener',
     language: 'TypeScript',
     summary:
-      'An in-progress full-stack URL shortener using React, Vercel Functions, and durable Redis-backed redirects.',
+      'A production-verified full-stack URL shortener using React, Vercel Functions, and durable Redis-backed redirects.',
     problem:
       'A useful short link must be safely validated, uniquely generated, persisted beyond a browser session, and resolved reliably without conflicting with the portfolio SPA.',
     solution:
-      'The current implementation combines an accessible React demo with TypeScript Vercel Functions, cryptographic Base62 codes, atomic Upstash Redis storage, server-side redirects, and creation rate limiting. Production deployment verification is still pending.',
+      'The implemented application combines an accessible React demo with TypeScript Vercel Functions, cryptographic Base62 codes, atomic Upstash Redis storage, server-side redirects, and creation rate limiting. Production verification confirms that generated links persist and redirect correctly.',
     concepts: ['TypeScript', 'Vercel Functions', 'Redis', 'API Design'],
     features: [
       'Responsive React form with loading, validation, rate-limit, and service-error states.',
@@ -61,38 +61,46 @@ export const projects: Project[] = [
       'Clipboard support and direct access to each generated short link.',
     ],
     testingStrategy: [
+      'The repository currently has 63 passing Vitest tests covering the URL shortener, pathfinding visualizer, and backend import regression guard.',
       'Vitest coverage for URL normalization, validation, code generation, collisions, and retry exhaustion.',
       'Handler tests for creation, redirects, malformed requests, method restrictions, rate limits, storage failures, and HEAD behavior.',
       'Redis adapter tests verify SET NX reservation semantics and atomic expiring rate-limit counters.',
       'Client tests verify request payloads, API response parsing, local validation, and user-facing error categories.',
     ],
-    status: 'In Progress',
+    status: 'Complete',
     repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
     demoUrl: '/projects/url-shortener/demo',
   },
   {
-    slug: 'real-time-chat',
-    title: 'Real-Time Chat Application',
-    language: 'C#',
+    slug: 'spotify-music-dashboard',
+    title: 'Spotify Music Dashboard',
+    language: 'TypeScript',
     summary:
-      'A planned real-time messaging application using a C# backend, persistent chat rooms, and live updates.',
+      'An in-progress React and TypeScript dashboard for exploring top Spotify artists and tracks through secure server-side OAuth.',
     problem:
-      'Real-time applications require careful handling of live connections, message delivery, state, persistence, and user experience.',
+      'Listening data is difficult to interpret when it is spread across individual tracks, artists, and profile views without a focused visual summary.',
     solution:
-      'This project will use ASP.NET Core and SignalR to support live chat rooms, message history, connection events, and a clean browser-based client.',
-    concepts: ['ASP.NET Core', 'SignalR', 'Authentication', 'Async Programming'],
+      'The current implementation uses Vercel Functions for Spotify Authorization Code OAuth, encrypted HttpOnly session cookies, a validated API layer for top-item data, and a responsive React dashboard embedded in the portfolio.',
+    concepts: [
+      'React',
+      'TypeScript',
+      'Spotify Web API',
+      'OAuth 2.0',
+      'Data Visualization',
+    ],
     features: [
-      'Create and join chat rooms.',
-      'Send and receive messages in real time.',
-      'Persist message history.',
-      'Show connection and user presence events.',
+      'Server-side Spotify Authorization Code OAuth requesting only user-top-read.',
+      'Encrypted HttpOnly session cookies with access-token refresh and reauthorization handling.',
+      'Responsive ranked views for top artists and tracks across three listening periods.',
+      'Accessible loading, disconnected, empty, restricted-account, rate-limit, and service-error states.',
     ],
     testingStrategy: [
-      'Unit tests for message and room services.',
-      'Integration tests for API endpoints.',
-      'SignalR hub tests for connection and message flows.',
-      'Manual test scenarios for multiple connected clients.',
+      'Vitest coverage for OAuth state handling, token exchange and refresh, encrypted sessions, cookies, and malformed configuration.',
+      'Handler tests cover callback validation, authenticated dashboard data, all time ranges, Development Mode restrictions, throttling, expired sessions, and logout.',
+      'Frontend client tests verify credentialed requests, response parsing, safe error categories, abort handling, and logout behavior.',
+      'Production login and data-loading verification remains required before the project is marked complete.',
     ],
-    status: 'Planned',
+    status: 'In Progress',
+    repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
   },
 ];

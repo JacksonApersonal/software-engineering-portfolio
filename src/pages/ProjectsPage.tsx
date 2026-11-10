@@ -35,9 +35,9 @@ export function ProjectsPage() {
 
           <p className="mt-5 max-w-3xl leading-7 text-neutral-400">
             Completed and planned projects cover algorithms, backend systems,
-            real-time communication, data modeling, testing, and clean
-            architecture. Status badges distinguish implemented work from future
-            project scope.
+            third-party API integration, OAuth, data visualization, testing,
+            and clean architecture. Status badges distinguish implemented work
+            from future project scope.
           </p>
         </div>
 

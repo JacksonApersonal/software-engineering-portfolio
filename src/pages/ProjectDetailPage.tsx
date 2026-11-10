@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router';
 import { projects } from '../data/projects';
 import { PathfindingVisualizerDemo } from '../components/demos/PathfindingVisualizerDemo';
 import { UrlShortenerDemo } from '../components/demos/UrlShortenerDemo';
+import { SpotifyMusicDashboardDemo } from '../components/demos/SpotifyMusicDashboardDemo';
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
@@ -22,6 +23,12 @@ export function ProjectDetailPage() {
 
   const isComplete = project.status === 'Complete';
   const isPlanned = project.status === 'Planned';
+  const hasEmbeddedDemo = [
+    'pathfinding-visualizer',
+    'url-shortener',
+    'spotify-music-dashboard',
+  ].includes(project.slug);
+  const hasDemo = hasEmbeddedDemo || Boolean(project.demoUrl);
   const featuresTitle = isComplete
     ? 'Implemented Features'
     : isPlanned
@@ -32,12 +39,12 @@ export function ProjectDetailPage() {
     : isPlanned
       ? 'Planned Testing Strategy'
       : 'Testing Strategy';
-  const demoTitle = project.demoUrl
+  const demoTitle = hasDemo
     ? isComplete
       ? 'Live project demo'
       : 'Interactive project demo'
     : 'Planned project demo';
-  const demoStatus = project.demoUrl
+  const demoStatus = hasDemo
     ? isComplete
       ? 'Available'
       : 'In progress'
@@ -113,6 +120,8 @@ export function ProjectDetailPage() {
             <PathfindingVisualizerDemo />
           ) : project.slug === 'url-shortener' ? (
             <UrlShortenerDemo />
+          ) : project.slug === 'spotify-music-dashboard' ? (
+            <SpotifyMusicDashboardDemo />
           ) : project.demoUrl ? (
             <div className="max-w-2xl text-center">
               <p className="text-neutral-300">
