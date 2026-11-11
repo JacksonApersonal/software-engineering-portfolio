@@ -77,11 +77,11 @@ export type SpawnOptions = {
 const DEFAULT_OPTIONS: EmergentLifeOptions = {
   worldWidth: 1_000,
   worldHeight: 700,
-  interactionRadius: 72,
-  repulsionRadius: 12,
-  interactionStrength: 48,
-  repulsionStrength: 150,
-  damping: 0.985,
+  interactionRadius: 68,
+  repulsionRadius: 18,
+  interactionStrength: 36,
+  repulsionStrength: 240,
+  damping: 0.992,
   maxSpeed: 120,
   fixedTimeStep: 1 / 60,
   maxParticles: 3_000,
@@ -102,15 +102,16 @@ export const EMERGENT_LIFE_PRESETS: Readonly<
     seed: 1_047,
     particleCount: 1_000,
     options: {
-      interactionStrength: 50,
-      repulsionStrength: 155,
-      damping: 0.986,
+      interactionRadius: 64,
+      interactionStrength: 34,
+      repulsionStrength: 245,
+      damping: 0.994,
     },
     matrix: [
-      [0.8, -0.35, 0.2, -0.15],
-      [-0.2, 0.75, -0.3, 0.25],
-      [0.2, -0.25, 0.7, -0.35],
-      [-0.3, 0.2, -0.15, 0.8],
+      [0.62, -0.3, 0.2, -0.12],
+      [-0.18, 0.58, -0.28, 0.24],
+      [0.2, -0.22, 0.56, -0.3],
+      [-0.26, 0.2, -0.12, 0.62],
     ],
   },
   orbits: {
@@ -120,10 +121,12 @@ export const EMERGENT_LIFE_PRESETS: Readonly<
     seed: 2_091,
     particleCount: 900,
     options: {
-      interactionRadius: 82,
-      interactionStrength: 58,
-      damping: 0.991,
-      maxSpeed: 145,
+      interactionRadius: 76,
+      repulsionRadius: 19,
+      interactionStrength: 40,
+      repulsionStrength: 230,
+      damping: 0.996,
+      maxSpeed: 150,
     },
     matrix: [
       [0.1, 1.15, -0.55, -0.15],
@@ -139,17 +142,17 @@ export const EMERGENT_LIFE_PRESETS: Readonly<
     seed: 3_119,
     particleCount: 1_200,
     options: {
-      interactionRadius: 64,
-      repulsionRadius: 11,
-      interactionStrength: 44,
-      repulsionStrength: 170,
-      damping: 0.978,
+      interactionRadius: 60,
+      repulsionRadius: 18,
+      interactionStrength: 34,
+      repulsionStrength: 265,
+      damping: 0.99,
     },
     matrix: [
-      [1.25, -0.45, -0.3, -0.4],
-      [-0.35, 1.2, -0.45, -0.25],
-      [-0.25, -0.4, 1.3, -0.45],
-      [-0.45, -0.25, -0.35, 1.2],
+      [0.9, -0.4, -0.28, -0.36],
+      [-0.32, 0.86, -0.4, -0.24],
+      [-0.24, -0.36, 0.92, -0.4],
+      [-0.4, -0.24, -0.32, 0.86],
     ],
   },
   chaos: {
@@ -159,17 +162,18 @@ export const EMERGENT_LIFE_PRESETS: Readonly<
     seed: 4_207,
     particleCount: 1_400,
     options: {
-      interactionRadius: 76,
-      interactionStrength: 68,
-      repulsionStrength: 145,
-      damping: 0.993,
+      interactionRadius: 68,
+      repulsionRadius: 18,
+      interactionStrength: 38,
+      repulsionStrength: 280,
+      damping: 0.995,
       maxSpeed: 165,
     },
     matrix: [
-      [-0.15, 1.35, -0.8, 0.4],
-      [0.65, -0.3, 1.1, -0.9],
-      [-1.05, 0.45, 0.35, 1.25],
-      [1.2, -0.75, 0.6, -0.2],
+      [-0.15, 1, -0.65, 0.35],
+      [0.55, -0.25, 0.9, -0.7],
+      [-0.8, 0.4, 0.3, 0.95],
+      [0.9, -0.6, 0.5, -0.2],
     ],
   },
 };
@@ -466,6 +470,10 @@ export class EmergentLifeSimulation {
 
     const interactionRadiusSquared =
       this.options.interactionRadius * this.options.interactionRadius;
+    const interactionRange = Math.max(
+      this.options.interactionRadius - this.options.repulsionRadius,
+      Number.EPSILON,
+    );
 
     for (let index = 0; index < this.count; index += 1) {
       const nearbyCellCount = this.collectNearbyCells(index);
@@ -474,7 +482,7 @@ export class EmergentLifeSimulation {
         let neighbor = this.cellHeads[this.nearbyCells[cellIndex]];
 
         while (neighbor !== -1) {
-          if (neighbor !== index) {
+          if (neighbor > index) {
             let deltaX = minimumImageDelta(
               this.x[neighbor] - this.x[index],
               this.options.worldWidth,
@@ -494,24 +502,39 @@ export class EmergentLifeSimulation {
 
               const distance = Math.sqrt(distanceSquared);
               const inverseDistance = 1 / distance;
-              const speciesCoefficient =
-                this.matrix[this.species[index]][this.species[neighbor]];
-              const interactionFalloff = smoothFalloff(
-                distance / this.options.interactionRadius,
-              );
-              let magnitude =
-                speciesCoefficient *
-                this.options.interactionStrength *
-                interactionFalloff;
+              let magnitudeForParticle: number;
+              let magnitudeForNeighbor: number;
 
               if (distance < this.options.repulsionRadius) {
-                magnitude -=
-                  this.options.repulsionStrength *
+                const repulsionMagnitude =
+                  -this.options.repulsionStrength *
                   smoothFalloff(distance / this.options.repulsionRadius);
+                magnitudeForParticle = repulsionMagnitude;
+                magnitudeForNeighbor = repulsionMagnitude;
+              } else {
+                const interactionProgress =
+                  (distance - this.options.repulsionRadius) /
+                  interactionRange;
+                const interactionFalloff = smoothInteractionBand(
+                  interactionProgress,
+                );
+                const interactionScale =
+                  this.options.interactionStrength * interactionFalloff;
+
+                magnitudeForParticle =
+                  this.matrix[this.species[index]][this.species[neighbor]] *
+                  interactionScale;
+                magnitudeForNeighbor =
+                  this.matrix[this.species[neighbor]][this.species[index]] *
+                  interactionScale;
               }
 
-              this.forceX[index] += deltaX * inverseDistance * magnitude;
-              this.forceY[index] += deltaY * inverseDistance * magnitude;
+              const directionX = deltaX * inverseDistance;
+              const directionY = deltaY * inverseDistance;
+              this.forceX[index] += directionX * magnitudeForParticle;
+              this.forceY[index] += directionY * magnitudeForParticle;
+              this.forceX[neighbor] -= directionX * magnitudeForNeighbor;
+              this.forceY[neighbor] -= directionY * magnitudeForNeighbor;
             }
           }
 
@@ -862,6 +885,12 @@ function smoothFalloff(normalizedDistance: number): number {
   const clampedDistance = Math.min(Math.max(normalizedDistance, 0), 1);
   const remaining = 1 - clampedDistance;
   return remaining * remaining * (1 + 2 * clampedDistance);
+}
+
+function smoothInteractionBand(progress: number): number {
+  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const band = clampedProgress * (1 - clampedProgress);
+  return 16 * band * band;
 }
 
 function wrapCoordinate(value: number, size: number): number {

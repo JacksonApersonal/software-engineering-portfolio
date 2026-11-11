@@ -86,7 +86,7 @@ export type EmergentLifeCanvasProps = {
   className?: string;
 };
 
-const PARTICLE_COLORS = ['#22d3ee', '#a78bfa', '#4ade80', '#fb7185'] as const;
+const PARTICLE_COLORS = ['#22d3ee', '#a78bfa', '#34d399', '#fb7185'] as const;
 const MAXIMUM_DPR = 2;
 const MAXIMUM_FRAME_GAP_SECONDS = 0.1;
 const MAXIMUM_CATCH_UP_STEPS = 5;
@@ -203,7 +203,7 @@ export const EmergentLifeCanvas = forwardRef<
     context.fillRect(0, 0, metrics.cssWidth, metrics.cssHeight);
 
     const particles = simulation.getParticles();
-    const radius = particles.count > 1_500 ? 1.65 : 2.15;
+    const radius = particles.count > 1_500 ? 2.45 : 2.9;
 
     for (let species = 0; species < PARTICLE_COLORS.length; species += 1) {
       context.beginPath();
@@ -224,7 +224,7 @@ export const EmergentLifeCanvas = forwardRef<
       }
 
       context.fillStyle = PARTICLE_COLORS[species];
-      context.globalAlpha = 0.92;
+      context.globalAlpha = 0.96;
       context.fill();
     }
 
@@ -826,7 +826,7 @@ export const EmergentLifeCanvas = forwardRef<
 
   return (
     <section
-      className={`w-full overflow-hidden rounded-2xl border border-neutral-800 bg-[#080b0d] shadow-2xl shadow-black/30 ${className}`}
+      className={`w-full self-start overflow-hidden rounded-2xl border border-neutral-800 bg-[#080b0d] shadow-2xl shadow-black/30 ${className}`}
       aria-labelledby="emergent-life-canvas-heading"
     >
       <div className="flex flex-col gap-4 border-b border-neutral-800 bg-neutral-950/90 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
@@ -884,7 +884,7 @@ export const EmergentLifeCanvas = forwardRef<
       <div className="relative bg-[#040607]">
         <canvas
           ref={canvasRef}
-          className="block min-h-[280px] w-full touch-none [aspect-ratio:16/10] sm:min-h-[360px]"
+          className="block aspect-[4/3] w-full touch-none sm:aspect-video"
           aria-label="Interactive Particle Life simulation. Choose attract or repel, then drag across the canvas."
           aria-describedby="emergent-life-canvas-instructions"
           onPointerDown={handlePointerDown}

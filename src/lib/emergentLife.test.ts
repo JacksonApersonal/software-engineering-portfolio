@@ -156,6 +156,57 @@ describe('Emergent Life forces and spatial queries', () => {
     expect(particles.velocityX[1]).toBeGreaterThan(0);
   });
 
+  it('keeps near-field repulsion dominant at maximum attraction', () => {
+    const matrix = zeroMatrix();
+    matrix[0][1] = 2;
+    matrix[1][0] = 2;
+    const simulation = createControlledSimulation(
+      [
+        { x: 40, y: 60, species: 0 },
+        { x: 42, y: 60, species: 1 },
+      ],
+      matrix,
+    );
+
+    simulation.step();
+    const particles = simulation.getParticles();
+
+    expect(particles.velocityX[0]).toBeLessThan(0);
+    expect(particles.velocityX[1]).toBeGreaterThan(0);
+  });
+
+  it('evaluates a wrapped particle pair once when the grid has one cell', () => {
+    const matrix = zeroMatrix();
+    matrix[0][1] = 1;
+    matrix[1][0] = 1;
+    const simulation = createControlledSimulation(
+      [
+        { x: 2, y: 10, species: 0 },
+        { x: 12, y: 10, species: 1 },
+      ],
+      matrix,
+      {
+        worldWidth: 20,
+        worldHeight: 20,
+        interactionRadius: 30,
+        repulsionRadius: 5,
+      },
+    );
+
+    simulation.step();
+    const particles = simulation.getParticles();
+    const options = simulation.getOptions();
+    const progress =
+      (10 - options.repulsionRadius) /
+      (options.interactionRadius - options.repulsionRadius);
+    const band = 16 * progress * progress * (1 - progress) * (1 - progress);
+    const expectedVelocity =
+      options.interactionStrength * band * options.fixedTimeStep;
+
+    expect(particles.velocityX[0]).toBeCloseTo(expectedVelocity, 5);
+    expect(particles.velocityX[1]).toBeCloseTo(-expectedVelocity, 5);
+  });
+
   it('updates interaction behavior when the matrix changes', () => {
     const particles: ParticleInitialState[] = [
       { x: 40, y: 60, species: 0 },
@@ -269,6 +320,36 @@ describe('Emergent Life boundaries and editing', () => {
 });
 
 describe('Emergent Life numerical stability', () => {
+  it('disperses a dense cluster while keeping every particle finite', () => {
+    const particles = Array.from({ length: 96 }, (_, index) => {
+      const angle = index * 2.399_963_229_728_653;
+      const radius = 0.04 * Math.sqrt(index);
+      return {
+        x: 100 + Math.cos(angle) * radius,
+        y: 60 + Math.sin(angle) * radius,
+        species: (index % 4) as SpeciesId,
+      };
+    });
+    const simulation = createControlledSimulation(particles, zeroMatrix(), {
+      repulsionRadius: 12,
+      repulsionStrength: 260,
+    });
+
+    simulation.step(90);
+    expectFiniteAndBounded(simulation);
+
+    const result = simulation.getParticles();
+    const horizontalSpread =
+      Math.max(...result.x.slice(0, result.count)) -
+      Math.min(...result.x.slice(0, result.count));
+    const verticalSpread =
+      Math.max(...result.y.slice(0, result.count)) -
+      Math.min(...result.y.slice(0, result.count));
+
+    expect(horizontalSpread).toBeGreaterThan(30);
+    expect(verticalSpread).toBeGreaterThan(30);
+  });
+
   it('keeps a medium-large simulation finite and bounded', () => {
     const simulation = new EmergentLifeSimulation({
       preset: 'chaos',

@@ -206,7 +206,7 @@ export function EmergentLifeSimulatorDemo() {
 
           <div className="grid grid-cols-3 gap-2 sm:min-w-[22rem]">
             <MetricCard
-              label="Particles"
+              label="Live particles"
               value={metrics.activeParticleCount.toLocaleString()}
             />
             <MetricCard
@@ -224,7 +224,7 @@ export function EmergentLifeSimulatorDemo() {
           </div>
         </div>
 
-        <div className="grid gap-5 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:p-6">
+        <div className="grid gap-5 p-4 sm:p-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:p-6">
           <EmergentLifeCanvas
             ref={canvasRef}
             initialPreset={selectedPreset}
@@ -289,7 +289,7 @@ export function EmergentLifeSimulatorDemo() {
 
               <RangeControl
                 id="emergent-life-particle-count"
-                label="Particle count"
+                label="Starting population"
                 value={selectedParticleCount}
                 displayValue={selectedParticleCount.toLocaleString()}
                 minimum={250}
@@ -299,8 +299,8 @@ export function EmergentLifeSimulatorDemo() {
               />
               <p className="mt-1 text-xs leading-5 text-neutral-500">
                 {hasPendingParticleCount
-                  ? 'New count applies on Reset or preset change.'
-                  : 'Current count matches the selected value.'}
+                  ? 'Applies on Reset or preset change; live count also reflects spawning and erasing.'
+                  : 'Reset starts with this many particles; canvas tools can change the live count.'}
               </p>
 
               <RangeControl
