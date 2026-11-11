@@ -3,6 +3,7 @@ import { projects } from '../data/projects';
 import { PathfindingVisualizerDemo } from '../components/demos/PathfindingVisualizerDemo';
 import { UrlShortenerDemo } from '../components/demos/UrlShortenerDemo';
 import { SpotifyMusicDashboardDemo } from '../components/demos/SpotifyMusicDashboardDemo';
+import { EmergentLifeSimulatorDemo } from '../components/demos/EmergentLifeSimulatorDemo';
 
 export function ProjectDetailPage() {
   const { slug } = useParams();
@@ -27,6 +28,7 @@ export function ProjectDetailPage() {
     'pathfinding-visualizer',
     'url-shortener',
     'spotify-music-dashboard',
+    'emergent-life-simulator',
   ].includes(project.slug);
   const hasDemo = hasEmbeddedDemo || Boolean(project.demoUrl);
   const featuresTitle = isComplete
@@ -98,7 +100,7 @@ export function ProjectDetailPage() {
         </InfoPanel>
       </section>
 
-      <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-6">
+      <section className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-neutral-500">
@@ -115,13 +117,21 @@ export function ProjectDetailPage() {
           </span>
         </div>
 
-        <div className="mt-6 flex justify-center rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6">
+        <div
+          className={
+            project.slug === 'emergent-life-simulator'
+              ? 'mt-6 flex justify-center rounded-xl border border-neutral-800 bg-neutral-950/70 p-2 sm:p-4'
+              : 'mt-6 flex justify-center rounded-xl border border-dashed border-neutral-700 bg-neutral-950/70 p-6'
+          }
+        >
           {project.slug === 'pathfinding-visualizer' ? (
             <PathfindingVisualizerDemo />
           ) : project.slug === 'url-shortener' ? (
             <UrlShortenerDemo />
           ) : project.slug === 'spotify-music-dashboard' ? (
             <SpotifyMusicDashboardDemo />
+          ) : project.slug === 'emergent-life-simulator' ? (
+            <EmergentLifeSimulatorDemo />
           ) : project.demoUrl ? (
             <div className="max-w-2xl text-center">
               <p className="text-neutral-300">
@@ -166,16 +176,29 @@ export function ProjectDetailPage() {
           </p>
 
           <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-            {isPlanned ? 'Planned milestones' : 'Development milestones'}
+            {isPlanned ? 'Planned milestones' : 'Remaining verification'}
           </h2>
 
           <ol className="mt-6 grid gap-4 md:grid-cols-2">
-            <Milestone number="01" title="Define requirements" />
-            <Milestone number="02" title="Design data structures" />
-            <Milestone number="03" title="Build core logic" />
-            <Milestone number="04" title="Add tests" />
-            <Milestone number="05" title="Create interactive demo" />
-            <Milestone number="06" title="Write final reflection" />
+            {isPlanned ? (
+              <>
+                <Milestone number="01" title="Define requirements" />
+                <Milestone number="02" title="Design data structures" />
+                <Milestone number="03" title="Build core logic" />
+                <Milestone number="04" title="Add tests" />
+                <Milestone number="05" title="Create interactive demo" />
+                <Milestone number="06" title="Write final reflection" />
+              </>
+            ) : (
+              <>
+                <Milestone number="01" title="Verify desktop browsers" />
+                <Milestone number="02" title="Verify mobile pointer tools" />
+                <Milestone number="03" title="Review reduced motion" />
+                <Milestone number="04" title="Profile 2,000 particles" />
+                <Milestone number="05" title="Validate production build" />
+                <Milestone number="06" title="Complete final polish" />
+              </>
+            )}
           </ol>
         </section>
       )}

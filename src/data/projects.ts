@@ -103,4 +103,38 @@ export const projects: Project[] = [
     status: 'Complete',
     repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
   },
+  {
+    slug: 'emergent-life-simulator',
+    title: 'Emergent Life Simulator',
+    language: 'TypeScript',
+    summary:
+      'An interactive Particle Life simulation exploring how simple local attraction and repulsion rules can produce complex collective motion.',
+    problem:
+      'Emergent systems are difficult to understand from equations alone because large-scale patterns can arise from many small, local interactions without centralized control.',
+    solution:
+      'This in-progress project combines a deterministic TypeScript simulation engine, uniform spatial partitioning, fixed-step physics, and a responsive Canvas interface where visitors can tune directional species rules and manipulate particles directly.',
+    concepts: [
+      'React',
+      'TypeScript',
+      'Canvas 2D',
+      'Spatial Partitioning',
+      'Deterministic Simulation',
+    ],
+    features: [
+      'Four particle species governed by an editable directional 4x4 attraction and repulsion matrix.',
+      'Uniform spatial grid for nearby-neighbor queries instead of comparing every particle pair.',
+      'Fixed-step simulation with damping, bounded velocity, short-range repulsion, and toroidal boundaries.',
+      'Deterministic seeded initialization with Swarms, Orbits, Clusters, and Chaos configurations.',
+      'DPR-aware Canvas rendering with responsive resizing and reduced-motion behavior.',
+      'Pointer tools for attracting, repelling, spawning, and erasing particles with mouse, touch, or pen.',
+    ],
+    testingStrategy: [
+      'Vitest engine tests cover seeded determinism, force direction, near-field repulsion, matrix updates, spatial queries, wrapped boundaries, editing operations, and numerical stability.',
+      'Pure Canvas helper tests cover device-pixel-ratio sizing, responsive coordinate mapping, fixed-step accumulation, frame-gap clamping, and catch-up limits.',
+      'Control helper tests verify bounded particle counts, speed, brush settings, force strength, matrix coefficients, and interaction labels.',
+      'Rendered Canvas behavior, mobile pointer interactions, reduced motion, and production performance remain pending manual verification.',
+    ],
+    status: 'In Progress',
+    repoUrl: 'https://github.com/JacksonApersonal/software-engineering-portfolio',
+  },
 ];

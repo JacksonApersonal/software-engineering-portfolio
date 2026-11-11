@@ -3,9 +3,7 @@ import { ProjectCard } from '../components/ProjectCard';
 import { projects } from '../data/projects';
 
 export function HomePage() {
-  const featuredProjects = projects.filter(
-    (project) => project.status === 'Complete',
-  );
+  const featuredProjects = projects;
 
   return (
     <section className="space-y-16">
@@ -60,7 +58,7 @@ export function HomePage() {
       </div>
 
       <section className="grid gap-4 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 md:grid-cols-3">
-        <StatCard label="Working Projects" value="3" detail="Interactive demos backed by tested implementation." />
+        <StatCard label="Interactive Projects" value="4" detail="Three production-verified projects and one in browser verification." />
         <StatCard label="Engineering Scope" value="Full Stack" detail="React, serverless APIs, Redis, OAuth, and algorithms." />
         <StatCard label="Validation" value="Automated" detail="Model, domain, client, adapter, and handler tests." />
       </section>
@@ -85,7 +83,7 @@ export function HomePage() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {featuredProjects.map((project) => (
             <ProjectCard key={project.slug} project={project} />
           ))}

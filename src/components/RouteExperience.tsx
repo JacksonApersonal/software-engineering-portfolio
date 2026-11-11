@@ -68,7 +68,7 @@ function getRouteMetadata(pathname: string): RouteMetadata {
     '/projects': {
       title: 'Software Engineering Projects | Jackson Acord',
       description:
-        'Explore three working software projects covering pathfinding algorithms, Redis-backed redirects, Spotify OAuth, React, TypeScript, and automated testing.',
+        'Explore interactive software projects covering pathfinding, Redis-backed redirects, Spotify OAuth, deterministic particle simulation, React, TypeScript, and automated testing.',
       canonicalPath: '/projects',
     },
     '/about': {
